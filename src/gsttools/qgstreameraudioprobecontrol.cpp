@@ -55,7 +55,11 @@ QGstreamerAudioProbeControl::~QGstreamerAudioProbeControl()
 
 void QGstreamerAudioProbeControl::bufferProbed(GstBuffer* buffer)
 {
-    GstCaps* caps = gst_buffer_get_caps(buffer);
+    #if GST_VERSION_MAJOR >= 1
+    GstCaps* caps = NULL; // FIXME:
+    #else
+    gst_buffer_get_caps(buffer);
+    #endif
     if (!caps)
         return;
 
@@ -64,7 +68,19 @@ void QGstreamerAudioProbeControl::bufferProbed(GstBuffer* buffer)
     if (!format.isValid())
         return;
 
+    #if GST_VERSION_MAJOR >= 1
+
+    GstMapInfo info;
+
+    gst_buffer_map (buffer, &info, GST_MAP_READ);
+    QAudioBuffer audioBuffer = QAudioBuffer(QByteArray((const char*)info.data, info.size), format);
+    gst_buffer_unmap(buffer, &info);
+
+    #else
+
     QAudioBuffer audioBuffer = QAudioBuffer(QByteArray((const char*)buffer->data, buffer->size), format);
+
+    #endif
 
     {
         QMutexLocker locker(&m_bufferMutex);

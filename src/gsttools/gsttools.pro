@@ -13,14 +13,14 @@ LIBS += \
 }
 
 CONFIG += link_pkgconfig
+    gstreamer-interfaces-$$GST_VERSION \
 
 PKGCONFIG += \
-    gstreamer-0.10 \
-    gstreamer-base-0.10 \
-    gstreamer-interfaces-0.10 \
-    gstreamer-audio-0.10 \
-    gstreamer-video-0.10 \
-    gstreamer-pbutils-0.10
+    gstreamer-$$GST_VERSION \
+    gstreamer-base-$$GST_VERSION \
+    gstreamer-audio-$$GST_VERSION \
+    gstreamer-video-$$GST_VERSION \
+    gstreamer-pbutils-$$GST_VERSION
 
 maemo*:PKGCONFIG +=gstreamer-plugins-bad-0.10
 
@@ -106,13 +106,13 @@ maemo6 {
 }
 
 config_gstreamer_appsrc {
-    PKGCONFIG += gstreamer-app-0.10
+    PKGCONFIG += gstreamer-app-$$GST_VERSION
     PRIVATE_HEADERS += qgstappsrc_p.h
     SOURCES += qgstappsrc.cpp
 
     DEFINES += HAVE_GST_APPSRC
 
-    LIBS += -lgstapp-0.10
+    LIBS += -lgstapp-$$GST_VERSION
 }
 
 HEADERS += $$PRIVATE_HEADERS

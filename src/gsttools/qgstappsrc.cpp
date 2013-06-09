@@ -149,11 +149,24 @@ void QGstAppSrc::pushDataToAppSrc()
             size = qMin(m_stream->bytesAvailable(), queueSize());
         else
             size = qMin(m_stream->bytesAvailable(), (qint64)m_dataRequestSize);
-        void *data = g_malloc(size);
-        GstBuffer* buffer = gst_app_buffer_new(data, size, g_free, data);
+
+        GstBuffer* buffer = gst_buffer_new_and_alloc(size);
+
+#if GST_VERSION_MAJOR >= 1
+        GstMapInfo mapInfo;
+        gst_buffer_map(buffer, &mapInfo, GST_MAP_WRITE);
+        void* bufferData = mapInfo.data;
+#else
+        void* bufferData = GST_BUFFER_DATA(buffer);
+#endif
+
         buffer->offset = m_stream->pos();
-        qint64 bytesRead = m_stream->read((char*)GST_BUFFER_DATA(buffer), size);
+        qint64 bytesRead = m_stream->read((char*)bufferData, size);
         buffer->offset_end =  buffer->offset + bytesRead - 1;
+
+#if GST_VERSION_MAJOR >= 1
+        gst_buffer_unmap(buffer, &mapInfo);
+#endif
 
         if (bytesRead > 0) {
             m_dataRequested = false;
@@ -161,11 +174,22 @@ void QGstAppSrc::pushDataToAppSrc()
             GstFlowReturn ret = gst_app_src_push_buffer (GST_APP_SRC (element()), buffer);
             if (ret == GST_FLOW_ERROR) {
                 qWarning()<<"appsrc: push buffer error";
+
+#if GST_VERSION_MAJOR >= 1
+            } else if (ret == GST_FLOW_FLUSHING) {
+                qWarning()<<"appsrc: push buffer wrong state";
+            }
+#else
             } else if (ret == GST_FLOW_WRONG_STATE) {
                 qWarning()<<"appsrc: push buffer wrong state";
-            } else if (ret == GST_FLOW_RESEND) {
+            }
+#endif
+
+#if GST_VERSION_MAJOR < 1
+            else if (ret == GST_FLOW_RESEND) {
                 qWarning()<<"appsrc: push buffer resend";
             }
+#endif
         }
 
         // After reading we might be all done

@@ -151,7 +151,11 @@ private:
 
     static GstStateChangeReturn change_state(GstElement *element, GstStateChange transition);
 
-    static GstCaps *get_caps(GstBaseSink *sink);
+    static GstCaps *get_caps(GstBaseSink *sink
+#if GST_VERSION_MAJOR >= 1
+                             , GstCaps* /*filterCaps*/
+#endif
+                            );
     static gboolean set_caps(GstBaseSink *sink, GstCaps *caps);
 
     static GstFlowReturn buffer_alloc(

@@ -79,6 +79,9 @@ private:
     int m_bytesPerLine;
     MapMode m_mode;
     QVariant m_handle;
+#if GST_VERSION_MAJOR >= 1
+    GstMapInfo m_mapInfo;
+#endif
 };
 
 QT_END_NAMESPACE

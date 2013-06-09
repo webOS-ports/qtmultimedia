@@ -80,7 +80,12 @@ void QGstreamerVideoProbeControl::bufferProbed(GstBuffer* buffer)
     if (m_flushing)
         return;
 
+#if GST_VERSION_MAJOR >= 1
+    // FIXME: 
+    GstCaps* caps = NULL;//gst_buffer_get_caps(buffer);
+#else
     GstCaps* caps = gst_buffer_get_caps(buffer);
+#endif
     if (!caps)
         return;
 
