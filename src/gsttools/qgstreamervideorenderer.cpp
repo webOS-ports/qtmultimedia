@@ -63,7 +63,7 @@ GstElement *QGstreamerVideoRenderer::videoSink()
     if (!m_videoSink && m_surface) {
         m_videoSink = QVideoSurfaceGstSink::createSink(m_surface);
         gst_object_ref(GST_OBJECT(m_videoSink)); //Take ownership
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
 //FIXME:
 #else
         gst_object_sink(GST_OBJECT(m_videoSink));

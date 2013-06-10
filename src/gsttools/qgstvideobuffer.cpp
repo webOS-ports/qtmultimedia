@@ -83,7 +83,7 @@ uchar *QGstVideoBuffer::map(MapMode mode, int *numBytes, int *bytesPerLine)
         if (bytesPerLine)
             *bytesPerLine = m_bytesPerLine;
 
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
         gst_buffer_map(m_buffer, &m_mapInfo, GST_MAP_READ);
         if (numBytes)
             *numBytes = m_mapInfo.size;
@@ -101,7 +101,7 @@ uchar *QGstVideoBuffer::map(MapMode mode, int *numBytes, int *bytesPerLine)
 }
 void QGstVideoBuffer::unmap()
 {
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
     if (m_mode != NotMapped)
         gst_buffer_unmap(m_buffer, &m_mapInfo);
 #endif

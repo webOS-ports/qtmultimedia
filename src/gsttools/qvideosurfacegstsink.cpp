@@ -79,7 +79,7 @@ QVideoSurfaceGstDelegate::QVideoSurfaceGstDelegate(
     if (m_surface) {
         foreach (QObject *instance, bufferPoolLoader()->instances(QGstBufferPoolPluginKey)) {
             QGstBufferPoolInterface* plugin = qobject_cast<QGstBufferPoolInterface*>(instance);
-            
+
             if (plugin) {
                 m_pools.append(plugin);
             }
@@ -202,7 +202,6 @@ GstFlowReturn QVideoSurfaceGstDelegate::render(GstBuffer *buffer)
 
     QAbstractVideoBuffer *videoBuffer = 0;
 
-    printf("m_pool %p\n", m_pool);
     if (m_pool)
         videoBuffer = m_pool->prepareVideoBuffer(buffer, m_bytesPerLine);
 
@@ -221,6 +220,8 @@ GstFlowReturn QVideoSurfaceGstDelegate::render(GstBuffer *buffer)
     if (QThread::currentThread() == thread()) {
         if (!m_surface.isNull())
             m_surface->present(m_frame);
+        else 
+            qWarning() << "m_surface.isNull().";
     } else {
         QMetaObject::invokeMethod(this, "queuedRender", Qt::QueuedConnection);
         m_renderCondition.wait(&m_mutex, 300);
@@ -321,10 +322,9 @@ void QVideoSurfaceGstDelegate::updateSupportedFormats()
         if (m_pool)
             m_supportedPoolPixelFormats = m_surface->supportedPixelFormats(m_pool->handleType());
     }
-    printf("surf %p pool %p\n", (void*)m_surface, (void*)m_pool);
 }
 
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
 struct YuvFormat
 {
     QVideoFrame::PixelFormat pixelFormat;
@@ -370,7 +370,7 @@ static const YuvFormat qt_yuvColorLookup[] =
 static int indexOfYuvColor(QVideoFrame::PixelFormat format)
 {
     const int count = sizeof(qt_yuvColorLookup) / sizeof(YuvFormat);
-printf("FORMAT %d\n", format);
+
     for (int i = 0; i < count; ++i)
         if (qt_yuvColorLookup[i].pixelFormat == format)
             return i;
@@ -495,7 +495,7 @@ void QVideoSurfaceGstSink::class_init(gpointer g_class, gpointer class_data)
     base_sink_class->get_caps = QVideoSurfaceGstSink::get_caps;
     base_sink_class->set_caps = QVideoSurfaceGstSink::set_caps;
 // FIXME:
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
 #else
     base_sink_class->buffer_alloc = QVideoSurfaceGstSink::buffer_alloc;
 #endif
@@ -517,7 +517,7 @@ void QVideoSurfaceGstSink::base_init(gpointer g_class)
 {
     static GstStaticPadTemplate sink_pad_template = GST_STATIC_PAD_TEMPLATE(
             "sink", GST_PAD_SINK, GST_PAD_ALWAYS, GST_STATIC_CAPS(
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
                     "video/x-raw, "
                     "format = (string) RGBA,"
                     "framerate = (fraction) [ 0, MAX ], "
@@ -587,7 +587,7 @@ GstStateChangeReturn QVideoSurfaceGstSink::change_state(
 }
 
 GstCaps *QVideoSurfaceGstSink::get_caps(GstBaseSink *base
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
                                         , GstCaps* /*filterCaps*/
 #endif
 )
@@ -618,7 +618,7 @@ GstCaps *QVideoSurfaceGstSink::get_caps(GstBaseSink *base
 
         if (index != -1) {
             gst_caps_append_structure(caps, gst_structure_new(
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
                     "video/x-raw",
 #else
                     "video/x-raw-yuv",
@@ -626,7 +626,7 @@ GstCaps *QVideoSurfaceGstSink::get_caps(GstBaseSink *base
                     "framerate", GST_TYPE_FRACTION_RANGE, 0, 1, INT_MAX, 1,
                     "width"    , GST_TYPE_INT_RANGE, 1, INT_MAX,
                     "height"   , GST_TYPE_INT_RANGE, 1, INT_MAX,
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
                     "format"   , G_TYPE_STRING, gst_video_format_to_string(qt_yuvColorLookup[index].vfmt),
 #else
                     "format"   , G_TYPE_STRING, qt_yuvColorLookup[index].fourcc,
@@ -640,7 +640,7 @@ GstCaps *QVideoSurfaceGstSink::get_caps(GstBaseSink *base
         for (int i = 0; i < count; ++i) {
             if (qt_rgbColorLookup[i].pixelFormat == format) {
                 GstStructure *structure = gst_structure_new(
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
                         "video/x-raw",
                         "format"    , G_TYPE_STRING, gst_video_format_to_string(qt_yuvColorLookup[index].vfmt),
 #else
@@ -672,7 +672,7 @@ GstCaps *QVideoSurfaceGstSink::get_caps(GstBaseSink *base
 gboolean QVideoSurfaceGstSink::set_caps(GstBaseSink *base, GstCaps *caps)
 {
     VO_SINK(base);
-    printf("SET CAPS\n");
+
 #ifdef DEBUG_VIDEO_SURFACE_SINK
     qDebug() << "set_caps:";
     qDebug() << gst_caps_to_string(caps);
@@ -859,7 +859,7 @@ GstFlowReturn QVideoSurfaceGstSink::buffer_alloc(
 
     poolLock.unlock();
 
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
     GstCaps *intersection = gst_caps_intersect(get_caps(GST_BASE_SINK(sink), NULL), caps);
 #else
     GstCaps *intersection = gst_caps_intersect(get_caps(GST_BASE_SINK(sink)), caps);
@@ -928,7 +928,6 @@ GstFlowReturn QVideoSurfaceGstSink::buffer_alloc(
 gboolean QVideoSurfaceGstSink::start(GstBaseSink *base)
 {
     Q_UNUSED(base);
-printf("START\n");
     return TRUE;
 }
 
@@ -954,8 +953,11 @@ gboolean QVideoSurfaceGstSink::event(GstBaseSink *base, GstEvent *event)
         VO_SINK(base);
         sink->delegate->setLastPrerolledBuffer(0);
     }
-
-    return TRUE;
+#if GST_CHECK_VERSION(1, 0, 0)
+    return GST_BASE_SINK_CLASS (sink_parent_class)->event (base, event);
+#else
+    return gst_base_sink_default_event(base, event);
+#endif
 }
 
 GstFlowReturn QVideoSurfaceGstSink::preroll(GstBaseSink *base, GstBuffer *buffer)

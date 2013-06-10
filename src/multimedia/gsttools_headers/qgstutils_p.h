@@ -70,7 +70,7 @@ namespace QGstUtils {
     QSize capsResolution(const GstCaps *caps);
     QSize capsCorrectedResolution(const GstCaps *caps);
     QAudioFormat audioFormatForCaps(const GstCaps *caps);
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
     QAudioFormat audioFormatForSample(GstSample *sample);
 #else
     QAudioFormat audioFormatForBuffer(GstBuffer *buffer);

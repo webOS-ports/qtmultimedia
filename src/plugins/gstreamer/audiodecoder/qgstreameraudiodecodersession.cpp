@@ -454,7 +454,7 @@ QAudioBuffer QGstreamerAudioDecoderSession::read()
         const char* bufferData = 0;
         int bufferSize = 0;
 
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
         GstSample *sample = gst_app_sink_pull_sample(m_appSink);
         GstBuffer *buffer = gst_sample_get_buffer(sample);
         GstMapInfo mapInfo;
@@ -480,7 +480,7 @@ QAudioBuffer QGstreamerAudioDecoderSession::read()
                 emit positionChanged(m_position);
             }
         }
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
         gst_sample_unref(sample);
 #else
         gst_buffer_unref(buffer);
@@ -555,7 +555,7 @@ void QGstreamerAudioDecoderSession::addAppSink()
 
     GstAppSinkCallbacks callbacks;
     memset(&callbacks, 0, sizeof(callbacks));
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
     // ### Should perhaps also rename new_buffer to new_sample.
     callbacks.new_sample = &new_buffer;
 #else
@@ -586,7 +586,7 @@ void QGstreamerAudioDecoderSession::updateDuration()
     gint64 gstDuration = 0;
     int duration = -1;
 
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
     if (m_playbin && gst_element_query_duration(m_playbin, format, &gstDuration))
         duration = gstDuration / 1000000;
 #else

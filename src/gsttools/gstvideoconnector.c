@@ -68,8 +68,7 @@ GST_STATIC_PAD_TEMPLATE ("src",
                          GST_STATIC_CAPS_ANY);
 
 
-#if GST_VERSION_MAJOR >= 1
-
+#if GST_CHECK_VERSION(1,0,0)
 
 G_DEFINE_TYPE(GstVideoConnector, gst_video_connector, GST_TYPE_ELEMENT);
 #else
@@ -83,7 +82,7 @@ GST_BOILERPLATE_FULL (GstVideoConnector, gst_video_connector, GstElement,
 
 static void gst_video_connector_dispose (GObject * object);
 
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
 static GstFlowReturn gst_video_connector_chain (GstPad * pad, GstObject* parent, GstBuffer * buf);
 #else
 static GstFlowReturn gst_video_connector_chain (GstPad * pad, GstBuffer * buf);
@@ -94,7 +93,7 @@ static GstFlowReturn gst_video_connector_buffer_alloc (GstPad * pad,
 static GstStateChangeReturn gst_video_connector_change_state (GstElement *
                                                               element, GstStateChange transition);
 
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
 static gboolean gst_video_connector_handle_sink_event (GstPad * pad, GstObject* parent,
                                                        GstEvent * event);
 #else
@@ -102,8 +101,9 @@ static gboolean gst_video_connector_handle_sink_event (GstPad * pad,
                                                        GstEvent * event);
 #endif
 
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
 static GstPadProbeReturn gst_video_connector_new_buffer_probe(GstPad *pad, GstPadProbeInfo *info, gpointer object);
+static GstPadProbeReturn gst_video_connector_new_event_probe(GstPad *pad, GstPadProbeInfo *info, gpointer object);
 #else
 static gboolean gst_video_connector_new_buffer_probe(GstObject *pad, GstBuffer *buffer, guint * object);
 static gboolean gst_video_connector_setcaps (GstPad  *pad, GstCaps *caps);
@@ -113,7 +113,7 @@ static gboolean gst_video_connector_acceptcaps (GstPad * pad, GstCaps * caps);
 
 static void gst_video_connector_resend_new_segment(GstElement * element, gboolean emitFailedSignal);
 
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
 static void
 gst_video_connector_class_init (GstVideoConnectorClass * klass)
 {
@@ -198,13 +198,13 @@ gst_video_connector_class_init (GstVideoConnectorClass * klass)
 
 static void
 gst_video_connector_init (GstVideoConnector *element
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
 #else
                           ,GstVideoConnectorClass *g_class
 #endif
                           )
 {
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
 #else
     (void) g_class;
 #endif
@@ -213,11 +213,12 @@ gst_video_connector_init (GstVideoConnector *element
                                               "sink");
     gst_pad_set_chain_function(element->sinkpad,
                                GST_DEBUG_FUNCPTR (gst_video_connector_chain));
-    gst_pad_set_event_function(element->sinkpad,
-                               GST_DEBUG_FUNCPTR (gst_video_connector_handle_sink_event));
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
     /* gstreamer 1.x uses QUERY for allocation and caps handiling purposes */
 #else
+    gst_pad_set_event_function(element->sinkpad,
+                               GST_DEBUG_FUNCPTR (gst_video_connector_handle_sink_event));
+
     gst_pad_set_bufferalloc_function(element->sinkpad,
                                      GST_DEBUG_FUNCPTR (gst_video_connector_buffer_alloc));
     gst_pad_set_setcaps_function(element->sinkpad,
@@ -232,9 +233,11 @@ gst_video_connector_init (GstVideoConnector *element
     element->srcpad =
             gst_pad_new_from_static_template (&gst_video_connector_src_factory,
                                               "src");
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
     gst_pad_add_probe(element->srcpad, GST_PAD_PROBE_TYPE_BUFFER, 
                              gst_video_connector_new_buffer_probe, element, NULL);
+    gst_pad_add_probe(element->sinkpad, GST_PAD_PROBE_TYPE_EVENT_DOWNSTREAM, 
+                             gst_video_connector_new_event_probe, element, NULL);
 #else 
     gst_pad_add_buffer_probe(element->srcpad,
                              G_CALLBACK(gst_video_connector_new_buffer_probe), element);
@@ -266,14 +269,14 @@ gst_video_connector_dispose (GObject * object)
 
     gst_video_connector_reset (element);
 
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
     G_OBJECT_CLASS (gst_video_connector_parent_class)->dispose (object);
 #else
     G_OBJECT_CLASS (parent_class)->dispose (object);
 #endif
 }
 
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
 /* For gstreamer 1.x we handle it in ALLOCATION Query */
 #else
 // "When this function returns anything else than GST_FLOW_OK,
@@ -412,7 +415,19 @@ gst_video_connector_resend_new_segment(GstElement * element, gboolean emitFailed
         connector->failedSignalEmited = FALSE;
 }
 
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
+static GstPadProbeReturn gst_video_connector_new_event_probe(GstPad *pad, GstPadProbeInfo *info, gpointer object)
+{
+    GstVideoConnector *connector = GST_VIDEO_CONNECTOR (object);
+    GstEvent *event = gst_pad_probe_info_get_event(info);
+
+    GST_DEBUG_OBJECT(connector, "Event %"GST_PTR_FORMAT" received\n", event);
+
+    return GST_PAD_PROBE_OK;
+}
+#endif
+
+#if GST_CHECK_VERSION(1,0,0)
 static GstPadProbeReturn gst_video_connector_new_buffer_probe(GstPad *pad, GstPadProbeInfo *info, gpointer object)
 {
     (void) info;
@@ -434,13 +449,13 @@ static gboolean gst_video_connector_new_buffer_probe(GstObject *pad, GstBuffer *
     if (element->relinked)
         GST_LOG_OBJECT(element, "rejected buffer because of new segment request");
 
-    return !element->relinked;
+    return element->relinked ? GST_PAD_PROBE_DROP : GST_PAD_PROBE_OK;
 }
 
 
 
 static GstFlowReturn
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
 gst_video_connector_chain (GstPad * pad, GstObject* parent, GstBuffer * buf)
 #else
 gst_video_connector_chain (GstPad * pad, GstBuffer * buf)
@@ -449,7 +464,7 @@ gst_video_connector_chain (GstPad * pad, GstBuffer * buf)
     GstFlowReturn res;
     GstVideoConnector *element;
 
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
     (void)parent;
 #endif
 
@@ -464,8 +479,10 @@ gst_video_connector_chain (GstPad * pad, GstBuffer * buf)
         */
         while (element->relinked) {
             element->relinked = FALSE;
-
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
+            if (element->latest_buffer && GST_BUFFER_TIMESTAMP_IS_VALID(element->latest_buffer)) {
+                element->segment.position = GST_BUFFER_TIMESTAMP (element->latest_buffer);
+            }
 #else
             gint64 pos = element->segment.last_stop;
             if (element->latest_buffer && GST_BUFFER_TIMESTAMP_IS_VALID(element->latest_buffer)) {
@@ -474,7 +491,7 @@ gst_video_connector_chain (GstPad * pad, GstBuffer * buf)
 #endif
 
             //push a new segment and last buffer
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
             GstEvent *ev = gst_event_new_segment (&element->segment);
 
 #else
@@ -547,7 +564,7 @@ gst_video_connector_change_state (GstElement * element,
     GstStateChangeReturn result;
 
     connector = GST_VIDEO_CONNECTOR(element);
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
     result = GST_ELEMENT_CLASS (gst_video_connector_parent_class)->change_state(element, transition);
 #else
     result = GST_ELEMENT_CLASS (parent_class)->change_state(element, transition);
@@ -566,17 +583,22 @@ gst_video_connector_change_state (GstElement * element,
     return result;
 }
 
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
 static gboolean gst_video_connector_handle_sink_event (GstPad * pad, GstObject* parent,
                                                        GstEvent * event)
 {
-    if (GST_EVENT_TYPE (event) == GST_EVENT_SEGMENT) {
-        GstVideoConnector *element = GST_VIDEO_CONNECTOR (gst_pad_get_parent (pad));
-        GstSegment *seg = NULL;
-        gst_event_parse_segment (event, &seg);
-        gst_object_unref (element);
+    GstVideoConnector *element = GST_VIDEO_CONNECTOR (gst_pad_get_parent (pad));
+
+    switch (GST_EVENT_TYPE (event)) {
+      case GST_EVENT_SEGMENT: 
+      break;
+      case GST_EVENT_CAPS:
+      break;
+    default:
+      break;
     }
 
+    gst_object_unref (element);
     return gst_pad_event_default (pad, parent, event);
 }
 

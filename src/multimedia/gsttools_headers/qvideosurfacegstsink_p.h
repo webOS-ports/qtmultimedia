@@ -152,7 +152,7 @@ private:
     static GstStateChangeReturn change_state(GstElement *element, GstStateChange transition);
 
     static GstCaps *get_caps(GstBaseSink *sink
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
                              , GstCaps* /*filterCaps*/
 #endif
                             );

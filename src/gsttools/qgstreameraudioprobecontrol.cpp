@@ -53,13 +53,14 @@ QGstreamerAudioProbeControl::~QGstreamerAudioProbeControl()
 
 }
 
+#if GST_CHECK_VERSION(1,0,0)
+void QGstreamerAudioProbeControl::bufferProbed(GstBuffer* buffer, GstCaps* caps)
+{
+#else
 void QGstreamerAudioProbeControl::bufferProbed(GstBuffer* buffer)
 {
-    #if GST_VERSION_MAJOR >= 1
-    GstCaps* caps = NULL; // FIXME:
-    #else
     gst_buffer_get_caps(buffer);
-    #endif
+#endif
     if (!caps)
         return;
 
@@ -68,7 +69,7 @@ void QGstreamerAudioProbeControl::bufferProbed(GstBuffer* buffer)
     if (!format.isValid())
         return;
 
-    #if GST_VERSION_MAJOR >= 1
+    #if GST_CHECK_VERSION(1,0,0)
 
     GstMapInfo info;
 

@@ -79,7 +79,7 @@ private:
     int m_bytesPerLine;
     MapMode m_mode;
     QVariant m_handle;
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
     GstMapInfo m_mapInfo;
 #endif
 };

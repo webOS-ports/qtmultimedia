@@ -152,7 +152,7 @@ void QGstAppSrc::pushDataToAppSrc()
 
         GstBuffer* buffer = gst_buffer_new_and_alloc(size);
 
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
         GstMapInfo mapInfo;
         gst_buffer_map(buffer, &mapInfo, GST_MAP_WRITE);
         void* bufferData = mapInfo.data;
@@ -164,7 +164,7 @@ void QGstAppSrc::pushDataToAppSrc()
         qint64 bytesRead = m_stream->read((char*)bufferData, size);
         buffer->offset_end =  buffer->offset + bytesRead - 1;
 
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
         gst_buffer_unmap(buffer, &mapInfo);
 #endif
 
@@ -175,7 +175,7 @@ void QGstAppSrc::pushDataToAppSrc()
             if (ret == GST_FLOW_ERROR) {
                 qWarning()<<"appsrc: push buffer error";
 
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
             } else if (ret == GST_FLOW_FLUSHING) {
                 qWarning()<<"appsrc: push buffer wrong state";
             }

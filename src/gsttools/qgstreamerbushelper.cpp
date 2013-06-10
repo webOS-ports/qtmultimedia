@@ -160,7 +160,7 @@ QGstreamerBusHelper::QGstreamerBusHelper(GstBus* bus, QObject* parent):
     QObject(parent)
 {
     d = new QGstreamerBusHelperPrivate(this, bus);
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
     gst_bus_set_sync_handler(bus, (GstBusSyncHandler)syncGstBusFilter, d, 0);
 #else
     gst_bus_set_sync_handler(bus, (GstBusSyncHandler)syncGstBusFilter, d);
@@ -170,7 +170,7 @@ QGstreamerBusHelper::QGstreamerBusHelper(GstBus* bus, QObject* parent):
 
 QGstreamerBusHelper::~QGstreamerBusHelper()
 {
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
     gst_bus_set_sync_handler(d->bus(), 0, 0, 0);
 #else
     gst_bus_set_sync_handler(d->bus(),0,0);

@@ -75,14 +75,18 @@ void QGstreamerVideoProbeControl::stopFlushing()
     m_flushing = false;
 }
 
+#if GST_CHECK_VERSION(1,0,0)
+void QGstreamerVideoProbeControl::bufferProbed(GstBuffer* buffer, GstCaps* caps)
+#else
 void QGstreamerVideoProbeControl::bufferProbed(GstBuffer* buffer)
+#endif
 {
     if (m_flushing)
         return;
 
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
     // FIXME: 
-    GstCaps* caps = NULL;//gst_buffer_get_caps(buffer);
+   // GstCaps* caps = NULL;//gst_buffer_get_caps(buffer);
 #else
     GstCaps* caps = gst_buffer_get_caps(buffer);
 #endif

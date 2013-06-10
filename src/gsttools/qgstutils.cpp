@@ -89,7 +89,7 @@ static void addTagToMap(const GstTagList *list,
             break;
         default:
             // GST_TYPE_DATE is a function, not a constant, so pull it out of the switch
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
             if (G_VALUE_TYPE(&val) == G_TYPE_DATE) {
                 const GDate *date = (const GDate *)g_value_get_boxed(&val);
 #else
@@ -260,7 +260,7 @@ QAudioFormat QGstUtils::audioFormatForCaps(const GstCaps *caps)
 
 
 
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
 /*!
   Returns audio format for a buffer.
   If the buffer doesn't have a valid audio format, an empty QAudioFormat is returned.

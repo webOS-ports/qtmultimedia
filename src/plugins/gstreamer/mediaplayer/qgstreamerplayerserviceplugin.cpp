@@ -109,7 +109,7 @@ void QGstreamerPlayerServicePlugin::updateSupportedMimeTypes() const
     gst_init(NULL, NULL);
 
     GList *plugins, *orig_plugins;
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
     orig_plugins = plugins = gst_registry_get_plugin_list (gst_registry_get());
 #else
     orig_plugins = plugins = gst_default_registry_get_plugin_list ();
@@ -121,7 +121,7 @@ void QGstreamerPlayerServicePlugin::updateSupportedMimeTypes() const
         GstPlugin *plugin = (GstPlugin *) (plugins->data);
         plugins = g_list_next (plugins);
 
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
         if (GST_OBJECT_FLAG_IS_SET(plugin, GST_PLUGIN_FLAG_BLACKLISTED))
             continue;
 #else
@@ -137,7 +137,7 @@ void QGstreamerPlayerServicePlugin::updateSupportedMimeTypes() const
                 if (GST_IS_ELEMENT_FACTORY (feature)) {
                     GstElementFactory *factory = GST_ELEMENT_FACTORY(gst_plugin_feature_load(feature));
                     if (factory
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
                         && (qstrcmp(gst_element_factory_get_metadata(factory, GST_ELEMENT_METADATA_KLASS), "Codec/Decoder/Audio") == 0
                           || qstrcmp(gst_element_factory_get_metadata(factory, GST_ELEMENT_METADATA_KLASS),"Codec/Decoder/Video") == 0 
                           || qstrcmp(gst_element_factory_get_metadata(factory, GST_ELEMENT_METADATA_KLASS), "Codec/Demux") == 0 )

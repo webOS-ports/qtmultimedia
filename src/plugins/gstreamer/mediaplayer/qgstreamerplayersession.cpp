@@ -78,7 +78,7 @@ typedef enum {
     GST_PLAY_FLAG_BUFFERING     = 0x000000100
 } GstPlayFlags;
 
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
 #define DEFAULT_RAW_CAPS \
     "video/x-surface; " \
     "text/plain; " \
@@ -166,9 +166,9 @@ QGstreamerPlayerSession::QGstreamerPlayerSession(QObject *parent)
     m_videoOutputBin = gst_bin_new("video-output-bin");
     gst_object_ref(GST_OBJECT(m_videoOutputBin));
 
-    m_videoIdentity = gst_element_factory_make("identity", NULL);//GST_ELEMENT(g_object_new(gst_video_connector_get_type(), 0));
+    m_videoIdentity = GST_ELEMENT(g_object_new(gst_video_connector_get_type(), 0));
     g_signal_connect(G_OBJECT(m_videoIdentity), "connection-failed", G_CALLBACK(insertColorSpaceElement), (gpointer)this);
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
     m_colorSpace = gst_element_factory_make("videoconvert", "ffmpegcolorspace-vo");
 #else
     m_colorSpace = gst_element_factory_make("ffmpegcolorspace", "ffmpegcolorspace-vo");
@@ -319,7 +319,7 @@ qint64 QGstreamerPlayerSession::position() const
     GstFormat   format = GST_FORMAT_TIME;
     gint64      position = 0;
 
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
     if ( m_playbin && gst_element_query_position(m_playbin, format, &position))
         m_lastPosition = position / 1000000;
 #else
@@ -455,14 +455,14 @@ bool QGstreamerPlayerSession::isAudioAvailable() const
     return m_audioAvailable;
 }
 
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
 static GstPadProbeReturn block_pad_cb(GstPad *pad, GstPadProbeInfo *info, gpointer user_data)
 #else
 static void block_pad_cb(GstPad *pad, gboolean blocked, gpointer user_data)
 #endif
 {
     Q_UNUSED(pad);
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
     Q_UNUSED(info);
     Q_UNUSED(user_data);
     return GST_PAD_PROBE_OK;
@@ -624,7 +624,7 @@ void QGstreamerPlayerSession::setVideoRenderer(QObject *videoOutput)
 
         //block pads, async to avoid locking in paused state
         GstPad *srcPad = gst_element_get_static_pad(m_videoIdentity, "src");
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
         this->pad_probe_id = gst_pad_add_probe(srcPad, GST_PAD_PROBE_TYPE_BUFFER, block_pad_cb, this, NULL);
 #else
         gst_pad_set_blocked_async(srcPad, true, &block_pad_cb, this);
@@ -669,7 +669,7 @@ void QGstreamerPlayerSession::finishVideoOutputChange()
         //video output was change back to the current one,
         //no need to torment the pipeline, just unblock the pad
         if (gst_pad_is_blocked(srcPad))
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
             gst_pad_remove_probe(srcPad, this->pad_probe_id);
 #else
             gst_pad_set_blocked_async(srcPad, false, &block_pad_cb, 0);
@@ -759,7 +759,7 @@ void QGstreamerPlayerSession::finishVideoOutputChange()
 
     //don't have to wait here, it will unblock eventually
     if (gst_pad_is_blocked(srcPad))
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
             gst_pad_remove_probe(srcPad, this->pad_probe_id);
 #else
             gst_pad_set_blocked_async(srcPad, false, &block_pad_cb, 0);
@@ -1329,7 +1329,7 @@ void QGstreamerPlayerSession::getStreamsInfo()
         default:
             break;
         }
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
         if (tags && GST_IS_TAG_LIST(tags)) {
 #else
         if (tags && gst_is_tag_list(tags)) {
@@ -1372,7 +1372,7 @@ void QGstreamerPlayerSession::updateVideoResolutionTag()
     QSize aspectRatio;
 
     GstPad *pad = gst_element_get_static_pad(m_videoIdentity, "src");
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
     GstCaps *caps = gst_pad_get_current_caps(pad);
 #else
     GstCaps *caps = gst_pad_get_negotiated_caps(pad);
@@ -1420,7 +1420,7 @@ void QGstreamerPlayerSession::updateDuration()
     gint64 gstDuration = 0;
     int duration = -1;
 
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
     if (m_playbin && gst_element_query_duration(m_playbin, format, &gstDuration))
 #else
     if (m_playbin && gst_element_query_duration(m_playbin, &format, &gstDuration))
@@ -1487,7 +1487,7 @@ void QGstreamerPlayerSession::playbinNotifySource(GObject *o, GParamSpec *p, gpo
 
     // The rest
     if (g_object_class_find_property(G_OBJECT_GET_CLASS(source), "extra-headers") != 0) {
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
         GstStructure *extras = gst_structure_new_empty("extras");
 #else
         GstStructure *extras = gst_structure_empty_new("extras");
@@ -1645,7 +1645,7 @@ GstAutoplugSelectResult QGstreamerPlayerSession::handleAutoplugSelect(GstBin *bi
     const gchar *factoryName = gst_plugin_feature_get_name(GST_PLUGIN_FEATURE(factory));
     if (g_str_has_prefix(factoryName, "vaapi")) {
         GstPad *sinkPad = gst_element_get_static_pad(session->m_videoSink, "sink");
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
         GstCaps *sinkCaps = gst_pad_query_caps(sinkPad, NULL);
 #else
         GstCaps *sinkCaps = gst_pad_get_caps(sinkPad);
@@ -1678,7 +1678,7 @@ void QGstreamerPlayerSession::handleElementAdded(GstBin *bin, GstElement *elemen
         // Disable on-disk buffering.
         g_object_set(G_OBJECT(element), "temp-template", NULL, NULL);
     } else if (g_str_has_prefix(elementName, "uridecodebin") ||
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
         g_str_has_prefix(elementName, "decodebin")) {
 #else
         g_str_has_prefix(elementName, "decodebin2")) {
@@ -1688,7 +1688,9 @@ void QGstreamerPlayerSession::handleElementAdded(GstBin *bin, GstElement *elemen
             g_object_set(G_OBJECT(element), "caps", gst_static_caps_get(&static_RawCaps), NULL);
             // listen for uridecodebin autoplug-select to skip VAAPI usage when the current
             // video sink doesn't support it
-            //g_signal_connect(element, "autoplug-select", G_CALLBACK(handleAutoplugSelect), session);
+#if !(GST_CHECK_VERSION(1,0,0))
+            g_signal_connect(element, "autoplug-select", G_CALLBACK(handleAutoplugSelect), session);
+#endif
         }
 
         //listen for queue2 element added to uridecodebin/decodebin2 as well.
@@ -1756,7 +1758,7 @@ void QGstreamerPlayerSession::removeProbe(QGstreamerVideoProbeControl* probe)
     // Assume user releases any outstanding references to video frames.
 }
 
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
 GstPadProbeReturn QGstreamerPlayerSession::padVideoBufferProbe(GstPad *pad, GstPadProbeInfo *info, gpointer user_data)
 {
     Q_UNUSED(pad);
@@ -1769,7 +1771,7 @@ GstPadProbeReturn QGstreamerPlayerSession::padVideoBufferProbe(GstPad *pad, GstP
         return GST_PAD_PROBE_OK;
 
     foreach (QGstreamerVideoProbeControl* probe, session->m_videoProbes)
-        probe->bufferProbed(buffer);
+        probe->bufferProbed(buffer, gst_pad_get_current_caps(pad));
 
     return GST_PAD_PROBE_OK;
 }
@@ -1809,7 +1811,7 @@ void QGstreamerPlayerSession::removeProbe(QGstreamerAudioProbeControl* probe)
     m_audioProbes.removeOne(probe);
 }
 
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
 GstPadProbeReturn  QGstreamerPlayerSession::padAudioBufferProbe(GstPad *pad, GstPadProbeInfo* info, gpointer user_data)
 {
     Q_UNUSED(pad);
@@ -1822,7 +1824,7 @@ GstPadProbeReturn  QGstreamerPlayerSession::padAudioBufferProbe(GstPad *pad, Gst
         return GST_PAD_PROBE_OK;
 
     foreach (QGstreamerAudioProbeControl* probe, session->m_audioProbes)
-        probe->bufferProbed(buffer);
+        probe->bufferProbed(buffer, gst_pad_get_current_caps(pad));
 
     return GST_PAD_PROBE_OK;
 }
@@ -1875,7 +1877,7 @@ void QGstreamerPlayerSession::removeVideoBufferProbe()
 
     GstPad *pad = gst_element_get_static_pad(m_videoSink, "sink");
     if (pad) {
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
         gst_pad_remove_probe(pad, m_videoBufferProbeId);
 #else
         gst_pad_remove_buffer_probe(pad, m_videoBufferProbeId);
@@ -1894,7 +1896,7 @@ void QGstreamerPlayerSession::addVideoBufferProbe()
 
     GstPad *pad = gst_element_get_static_pad(m_videoSink, "sink");
     if (pad) {
-#if GST_VERSION_MAJOR >= 1
+#if GST_CHECK_VERSION(1,0,0)
         m_videoBufferProbeId = gst_pad_add_probe(pad, GST_PAD_PROBE_TYPE_BUFFER, padVideoBufferProbe, this, NULL);
 #else
         m_videoBufferProbeId = gst_pad_add_buffer_probe(pad, G_CALLBACK(padVideoBufferProbe), this);
@@ -1915,7 +1917,7 @@ void QGstreamerPlayerSession::removeAudioBufferProbe()
 
     GstPad *pad = gst_element_get_static_pad(m_audioSink, "sink");
     if (pad) {
-#if GST_VERSION_MAJOR >= 1 
+#if GST_CHECK_VERSION(1,0,0) 
         gst_pad_remove_probe(pad, m_audioBufferProbeId);
 #else
         gst_pad_remove_buffer_probe(pad, m_audioBufferProbeId);
@@ -1934,7 +1936,7 @@ void QGstreamerPlayerSession::addAudioBufferProbe()
 
     GstPad *pad = gst_element_get_static_pad(m_audioSink, "sink");
     if (pad) {
-#if GST_VERSION_MAJOR >= 1 
+#if GST_CHECK_VERSION(1,0,0) 
         m_audioBufferProbeId = gst_pad_add_probe(pad, GST_PAD_PROBE_TYPE_BUFFER, padAudioBufferProbe, this, NULL);
 #else
         m_audioBufferProbeId = gst_pad_add_buffer_probe(pad, G_CALLBACK(padAudioBufferProbe), this);
