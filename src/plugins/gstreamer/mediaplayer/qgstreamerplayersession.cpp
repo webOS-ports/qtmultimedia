@@ -61,7 +61,7 @@
 #include <QtCore/qdir.h>
 #include <QtCore/qstandardpaths.h>
 
-//#define DEBUG_PLAYBIN
+#define DEBUG_PLAYBIN
 //#define DEBUG_VO_BIN_DUMP
 
 QT_BEGIN_NAMESPACE
@@ -628,7 +628,7 @@ void QGstreamerPlayerSession::setVideoRenderer(QObject *videoOutput)
         //block pads, async to avoid locking in paused state
         GstPad *srcPad = gst_element_get_static_pad(m_videoIdentity, "src");
 #if GST_CHECK_VERSION(1,0,0)
-        this->pad_probe_id = gst_pad_add_probe(srcPad, GST_PAD_PROBE_TYPE_BUFFER, block_pad_cb, this, NULL);
+        this->pad_probe_id = gst_pad_add_probe(srcPad, (GstPadProbeType)(GST_PAD_PROBE_TYPE_BUFFER | GST_PAD_PROBE_TYPE_BLOCK), block_pad_cb, this, NULL);
 #else
         gst_pad_set_blocked_async(srcPad, true, &block_pad_cb, this);
 #endif

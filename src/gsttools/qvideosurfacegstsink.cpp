@@ -343,9 +343,6 @@ static const YuvFormat qt_yuvColorLookup[] =
     { QVideoFrame::Format_NV12,    GST_VIDEO_FORMAT_NV12, GST_MAKE_FOURCC('N','V','1','2'), 8 },
     { QVideoFrame::Format_NV21,    GST_VIDEO_FORMAT_NV21, GST_MAKE_FOURCC('N','V','2','1'), 8 },
     { QVideoFrame::Format_AYUV444, GST_VIDEO_FORMAT_AYUV, GST_MAKE_FOURCC('A','Y','U','V'), 32 },
-    { QVideoFrame::Format_RGB565,  GST_VIDEO_FORMAT_RGBx, GST_MAKE_FOURCC('R','G','B','x'), 16 },
-    { QVideoFrame::Format_RGB32,   GST_VIDEO_FORMAT_RGBx, GST_MAKE_FOURCC('R','G','B','x'), 32 },
-    { QVideoFrame::Format_ARGB32,  GST_VIDEO_FORMAT_RGBx, GST_MAKE_FOURCC('A','R','G','B'), 32 },
 };
 
 #else
@@ -413,7 +410,6 @@ struct RgbFormat
 static const RgbFormat qt_rgbColorLookup[] =
 {
     { QVideoFrame::Format_RGB32 , 32, 24, 4321, 0x0000FF00, 0x00FF0000, int(0xFF000000), 0x00000000 },
-#if GST_VERSION_MAJOR < 1
     { QVideoFrame::Format_RGB32 , 32, 24, 1234, 0x00FF0000, 0x0000FF00, 0x000000FF, 0x00000000 },
     { QVideoFrame::Format_BGR32 , 32, 24, 4321, int(0xFF000000), 0x00FF0000, 0x0000FF00, 0x00000000 },
     { QVideoFrame::Format_BGR32 , 32, 24, 1234, 0x000000FF, 0x0000FF00, 0x00FF0000, 0x00000000 },
@@ -422,7 +418,6 @@ static const RgbFormat qt_rgbColorLookup[] =
     { QVideoFrame::Format_RGB24 , 24, 24, 4321, 0x00FF0000, 0x0000FF00, 0x000000FF, 0x00000000 },
     { QVideoFrame::Format_BGR24 , 24, 24, 4321, 0x000000FF, 0x0000FF00, 0x00FF0000, 0x00000000 },
     { QVideoFrame::Format_RGB565, 16, 16, 1234, 0x0000F800, 0x000007E0, 0x0000001F, 0x00000000 }
-#endif
 };
 
 static int indexOfRgbColor(
@@ -604,6 +599,7 @@ GstCaps *QVideoSurfaceGstSink::get_caps(GstBaseSink *base
     QList<QVideoFrame::PixelFormat> poolHandleFormats;
     sink->delegate->poolMutex()->lock();
     QGstBufferPoolInterface *pool = sink->delegate->pool();
+
     if (pool)
         poolHandleFormats = sink->delegate->supportedPixelFormats(pool->handleType());
     sink->delegate->poolMutex()->unlock();
@@ -643,7 +639,13 @@ GstCaps *QVideoSurfaceGstSink::get_caps(GstBaseSink *base
                 GstStructure *structure = gst_structure_new(
 #if GST_CHECK_VERSION(1,0,0)
                         "video/x-raw",
-                        "format"    , G_TYPE_STRING, gst_video_format_to_string(qt_yuvColorLookup[index].vfmt),
+                        "format"    , G_TYPE_STRING, gst_video_format_to_string(gst_video_format_from_masks(qt_rgbColorLookup[i].depth,
+                                                                                 qt_rgbColorLookup[i].bitsPerPixel,
+                                                                                 qt_rgbColorLookup[i].endianness,
+                                                                                 qt_rgbColorLookup[i].red,
+                                                                                 qt_rgbColorLookup[i].green,
+                                                                                 qt_rgbColorLookup[i].blue,
+                                                                                 qt_rgbColorLookup[i].alpha)),
 #else
                         "video/x-raw-rgb",
 #endif
@@ -667,6 +669,7 @@ GstCaps *QVideoSurfaceGstSink::get_caps(GstBaseSink *base
         }
     }
 
+//    printf("get Caps %"GST_PTR_FORMAT"\n", caps);
     return caps;
 }
 
@@ -731,9 +734,43 @@ QVideoSurfaceFormat QVideoSurfaceGstSink::formatForCaps(GstCaps *caps, int *byte
     gst_structure_get_int(structure, "width", &size.rwidth());
     gst_structure_get_int(structure, "height", &size.rheight());
 
+#if GST_CHECK_VERSION(1, 0, 0) 
+    GstVideoInfo info;
+    gst_video_info_from_caps(&info, caps);
+    
+    if (info.finfo->format == GST_VIDEO_FORMAT_I420) {
+        int index = indexOfYuvColor(GST_VIDEO_FORMAT_I420);
+
+        if (index != -1) {
+            pixelFormat = qt_yuvColorLookup[index].pixelFormat;
+            bitsPerPixel = qt_yuvColorLookup[index].bitsPerPixel;
+        }
+    } else if (info.finfo->format == GST_VIDEO_FORMAT_RGBx) {
+        int depth = 0;
+        int endianness = 0;
+        int red = 0;
+        int green = 0;
+        int blue = 0;
+        int alpha = 0;
+
+        gst_structure_get_int(structure, "bpp", &bitsPerPixel);
+        gst_structure_get_int(structure, "depth", &depth);
+        gst_structure_get_int(structure, "endianness", &endianness);
+        gst_structure_get_int(structure, "red_mask", &red);
+        gst_structure_get_int(structure, "green_mask", &green);
+        gst_structure_get_int(structure, "blue_mask", &blue);
+        gst_structure_get_int(structure, "alpha_mask", &alpha);
+
+        int index = indexOfRgbColor(bitsPerPixel, depth, endianness, red, green, blue, alpha);
+        printf("INDEX %x\n", index);
+        if (index != -1)
+            pixelFormat = qt_rgbColorLookup[index].pixelFormat;
+    }
+#else
+
     if (qstrcmp(gst_structure_get_name(structure), "video/x-raw-yuv") == 0) {
         guint32 fourcc = 0;
-#if GST_VERSION_MAJOR >=1 
+#if GST_CHECK_VERSION(1, 0, 0) 
         int index = indexOfYuvColor(gst_video_format_from_string(gst_structure_get_string(structure, "format")));
 #else
         gst_structure_get_fourcc(structure, "format", &fourcc);
@@ -765,6 +802,7 @@ QVideoSurfaceFormat QVideoSurfaceGstSink::formatForCaps(GstCaps *caps, int *byte
         if (index != -1)
             pixelFormat = qt_rgbColorLookup[index].pixelFormat;
     }
+#endif
 
     if (pixelFormat != QVideoFrame::Format_Invalid) {
         QVideoSurfaceFormat format(size, pixelFormat, handleType);
