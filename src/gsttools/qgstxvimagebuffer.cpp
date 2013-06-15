@@ -52,6 +52,7 @@
 
 QT_BEGIN_NAMESPACE
 
+#if !GST_CHECK_VERSION(1,0,0)
 GstBufferClass *QGstXvImageBuffer::parent_class = NULL;
 
 GType QGstXvImageBuffer::get_type(void)
@@ -103,7 +104,7 @@ void QGstXvImageBuffer::buffer_finalize(QGstXvImageBuffer * xvImage)
             xvImage->pool->recycleBuffer(xvImage);
     }
 }
-
+#endif
 
 QGstXvImageBufferPool::QGstXvImageBufferPool(QObject *parent)
     :QObject(parent)
@@ -203,8 +204,12 @@ void QGstXvImageBufferPool::doAlloc()
     //Q_ASSERT(QThread::currentThread() == thread());
 
     XSync(display(), false);
-
+#if !GST_CHECK_VERSION(1,0,0)
     QGstXvImageBuffer *xvBuffer = (QGstXvImageBuffer *)gst_mini_object_new(QGstXvImageBuffer::get_type());
+#else
+    // FIXME: this is just stub.
+    QGstXvImageBuffer *xvBuffer = NULL;
+#endif
 
     quint64 portId = m_format.property("portId").toULongLong();
     int xvFormatId = m_format.property("xvFormatId").toInt();
@@ -240,11 +245,12 @@ void QGstXvImageBufferPool::doAlloc()
     shmctl (xvBuffer->shmInfo.shmid, IPC_RMID, NULL);
 
     xvBuffer->pool = this;
+#if !GST_CHECK_VERSION(1,0,0)
     GST_MINI_OBJECT_CAST(xvBuffer)->flags = 0;
     gst_buffer_set_caps(GST_BUFFER_CAST(xvBuffer), m_caps);
     GST_BUFFER_DATA(xvBuffer) = (uchar*)xvBuffer->xvImage->data;
     GST_BUFFER_SIZE(xvBuffer) = xvBuffer->xvImage->data_size;
-
+#endif
     m_allBuffers.append(xvBuffer);
     m_pool.append(xvBuffer);
 

@@ -85,7 +85,9 @@ struct QGstXvImageBuffer {
     static void class_init(gpointer g_class, gpointer class_data);
     static void buffer_init(QGstXvImageBuffer *xvimage, gpointer g_class);
     static void buffer_finalize(QGstXvImageBuffer * xvimage);
+#if !GST_CHECK_VERSION(1,0,0)
     static GstBufferClass *parent_class;
+#endif
 };
 
 QT_END_NAMESPACE

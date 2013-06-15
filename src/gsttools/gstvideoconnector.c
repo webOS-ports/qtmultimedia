@@ -104,6 +104,7 @@ static gboolean gst_video_connector_handle_sink_event (GstPad * pad,
 #if GST_CHECK_VERSION(1,0,0)
 static GstPadProbeReturn gst_video_connector_new_buffer_probe(GstPad *pad, GstPadProbeInfo *info, gpointer object);
 static GstPadProbeReturn gst_video_connector_new_event_probe(GstPad *pad, GstPadProbeInfo *info, gpointer object);
+static GstPadProbeReturn gst_video_connector_new_query_probe(GstPad *pad, GstPadProbeInfo *info, gpointer object);
 #else
 static gboolean gst_video_connector_new_buffer_probe(GstObject *pad, GstBuffer *buffer, guint * object);
 static gboolean gst_video_connector_setcaps (GstPad  *pad, GstCaps *caps);
@@ -214,7 +215,9 @@ gst_video_connector_init (GstVideoConnector *element
     gst_pad_set_chain_function(element->sinkpad,
                                GST_DEBUG_FUNCPTR (gst_video_connector_chain));
 #if GST_CHECK_VERSION(1,0,0)
-    /* gstreamer 1.x uses QUERY for allocation and caps handiling purposes */
+    /* gstreamer 1.x uses QUERYS and EVENTS for allocation and caps handiling purposes */
+    GST_OBJECT_FLAG_SET (element->sinkpad, GST_PAD_FLAG_PROXY_CAPS);
+    GST_OBJECT_FLAG_SET (element->sinkpad, GST_PAD_FLAG_PROXY_ALLOCATION);
 #else
     gst_pad_set_event_function(element->sinkpad,
                                GST_DEBUG_FUNCPTR (gst_video_connector_handle_sink_event));
@@ -236,6 +239,8 @@ gst_video_connector_init (GstVideoConnector *element
 #if GST_CHECK_VERSION(1,0,0)
     gst_pad_add_probe(element->srcpad, GST_PAD_PROBE_TYPE_BUFFER, 
                              gst_video_connector_new_buffer_probe, element, NULL);
+    gst_pad_add_probe(element->srcpad, GST_PAD_PROBE_TYPE_QUERY_DOWNSTREAM, 
+                             gst_video_connector_new_query_probe, element, NULL);
     gst_pad_add_probe(element->sinkpad, GST_PAD_PROBE_TYPE_EVENT_DOWNSTREAM, 
                              gst_video_connector_new_event_probe, element, NULL);
 #else 
@@ -425,6 +430,16 @@ static GstPadProbeReturn gst_video_connector_new_event_probe(GstPad *pad, GstPad
 
     return GST_PAD_PROBE_OK;
 }
+
+static GstPadProbeReturn gst_video_connector_new_query_probe(GstPad *pad, GstPadProbeInfo *info, gpointer object)
+{
+    GstVideoConnector *connector = GST_VIDEO_CONNECTOR (object);
+    GstQuery *query = gst_pad_probe_info_get_query(info);
+
+    GST_DEBUG_OBJECT(connector, "Query %"GST_PTR_FORMAT" received\n", query);
+
+    return GST_PAD_PROBE_OK;
+}
 #endif
 
 #if GST_CHECK_VERSION(1,0,0)
@@ -451,8 +466,6 @@ static gboolean gst_video_connector_new_buffer_probe(GstObject *pad, GstBuffer *
 
     return element->relinked ? GST_PAD_PROBE_DROP : GST_PAD_PROBE_OK;
 }
-
-
 
 static GstFlowReturn
 #if GST_CHECK_VERSION(1,0,0)

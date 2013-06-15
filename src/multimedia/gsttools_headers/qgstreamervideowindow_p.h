@@ -113,7 +113,11 @@ private slots:
     void updateNativeVideoSize();
 
 private:
+#if GST_CHECK_VERSION(1,0,0)
+    static GstPadProbeReturn padBufferProbe(GstPad *pad, GstPadProbeInfo *info, gpointer user_data);
+#else
     static void padBufferProbe(GstPad *pad, GstBuffer *buffer, gpointer user_data);
+#endif
 
     GstElement *m_videoSink;
     WId m_windowId;

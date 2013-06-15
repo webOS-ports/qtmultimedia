@@ -31,9 +31,7 @@ win32 {
         }
     }
     qtCompileTest(resourcepolicy)
-    equals(GST_VERSION, 0.10) {
-        qtCompileTest(xvideo)
-    }
+    qtCompileTest(xvideo)
 }
 
 load(qt_parts)

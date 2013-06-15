@@ -140,8 +140,11 @@ QGstreamerPlayerSession::QGstreamerPlayerSession(QObject *parent)
     gboolean result = gst_type_find_register(0, "playlist", GST_RANK_MARGINAL, playlistTypeFindFunction, 0, 0, this, 0);
     Q_ASSERT(result == TRUE);
     Q_UNUSED(result);
-
+#if GST_CHECK_VERSION(1,0,0)
     m_playbin = gst_element_factory_make("playbin", NULL);
+#else
+    m_playbin = gst_element_factory_make("playbin2", NULL);
+#endif
 
     if (m_playbin) {
         //GST_PLAY_FLAG_NATIVE_VIDEO omits configuration of ffmpegcolorspace and videoscale,

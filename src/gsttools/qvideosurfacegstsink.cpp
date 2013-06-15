@@ -84,7 +84,8 @@ QVideoSurfaceGstDelegate::QVideoSurfaceGstDelegate(
                 m_pools.append(plugin);
             }
         }
-#ifdef HAVE_XVIDEO
+#if defined(HAVE_XVIDEO)
+// && !GST_CHECK_VERSION(1,0,0)
         m_pools.append(new QGstXvImageBufferPool(this));
 #endif
         updateSupportedFormats();

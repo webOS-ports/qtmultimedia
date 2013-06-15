@@ -55,7 +55,7 @@ QGstreamerVideoOverlay::QGstreamerVideoOverlay(QObject *parent)
 {
     if (m_videoSink) {
         gst_object_ref(GST_OBJECT(m_videoSink)); //Take ownership
-        gst_object_sink(GST_OBJECT(m_videoSink));
+        //gst_object_sink(GST_OBJECT(m_videoSink));
     }
 
     connect(m_surface, SIGNAL(surfaceFormatChanged(QVideoSurfaceFormat)),
