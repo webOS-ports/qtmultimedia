@@ -69,25 +69,29 @@ QGstreamerVideoWindow::QGstreamerVideoWindow(QObject *parent, const char *elemen
     , m_fullScreen(false)
     , m_colorKey(QColor::Invalid)
 {
-    if (elementName)
+    if (elementName) {
         m_videoSink = gst_element_factory_make(elementName, NULL);
-    else
+    } else {
         m_videoSink = gst_element_factory_make("xvimagesink", NULL);
+    }
 
     if (m_videoSink) {
 #if GST_CHECK_VERSION(1,0,0)
         gst_object_ref_sink(GST_OBJECT(m_videoSink));
+        gst_object_ref_sink(GST_OBJECT(m_videoSink));
 #else
-        gst_object_ref(GST_OBJECT(m_videoSink)); //Take ownership
+        gst_object_ref(GST_OBJECT(m_videoSink)); // Take ownership
         gst_object_sink(GST_OBJECT(m_videoSink));
 #endif
-        GstPad *pad = gst_element_get_static_pad(m_videoSink,"sink");
+        GstPad *pad = gst_element_get_static_pad(m_videoSink, "sink");
 #if GST_CHECK_VERSION(1,0,0)
         m_bufferProbeId = gst_pad_add_probe(pad, GST_PAD_PROBE_TYPE_BUFFER, padBufferProbe, this, NULL);
 #else
         m_bufferProbeId = gst_pad_add_buffer_probe(pad, G_CALLBACK(padBufferProbe), this);
 #endif
     }
+    else
+        qDebug() << "No m_videoSink available!";
 }
 
 QGstreamerVideoWindow::~QGstreamerVideoWindow()
@@ -105,8 +109,6 @@ void QGstreamerVideoWindow::setWinId(WId id)
 {
     if (m_windowId == id)
         return;
-
-    qDebug() << Q_FUNC_INFO << id;
 
     WId oldId = m_windowId;
 
@@ -375,6 +377,8 @@ void QGstreamerVideoWindow::padBufferProbe(GstPad *pad, GstBuffer * /* buffer */
     QMetaObject::invokeMethod(control, "updateNativeVideoSize", Qt::QueuedConnection);
 
 #if GST_CHECK_VERSION(1,0,0)
+    Q_UNUSED(pad);
+    Q_UNUSED(info);
     return GST_PAD_PROBE_REMOVE;
 #else
     gst_pad_remove_buffer_probe(pad, control->m_bufferProbeId);

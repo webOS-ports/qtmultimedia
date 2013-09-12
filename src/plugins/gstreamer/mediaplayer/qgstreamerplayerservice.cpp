@@ -61,7 +61,11 @@
 #include <private/qgstreamervideorenderer_p.h>
 
 #if defined(Q_WS_MAEMO_6) && defined(__arm__)
-#include "qgstreamergltexturerenderer.h"
+#include "private/qgstreamergltexturerenderer.h"
+#endif
+
+#if defined(HAVE_MIR) && defined (__arm__)
+#include "private/qgstreamermirtexturerenderer_p.h"
 #endif
 
 #include "qgstreamerstreamscontrol.h"
@@ -92,14 +96,23 @@ QGstreamerPlayerService::QGstreamerPlayerService(QObject *parent):
 
 #if defined(Q_WS_MAEMO_6) && defined(__arm__)
     m_videoRenderer = new QGstreamerGLTextureRenderer(this);
+// TODO: Implement HAVE_UBUNTU_TOUCH configure check and remove QGstreamerMirTextureRenderer from the else case
+#elif defined(HAVE_MIR) && defined (__arm__)
+    m_videoRenderer = new QGstreamerMirTextureRenderer(this, m_session);
 #else
+    //m_videoRenderer = new QGstreamerMirTextureRenderer(this, m_session);
     m_videoRenderer = new QGstreamerVideoRenderer(this);
 #endif
 
 #if defined(HAVE_XVIDEO) && defined(HAVE_WIDGETS)
 #ifdef Q_WS_MAEMO_6
     m_videoWindow = new QGstreamerVideoWindow(this, "omapxvsink");
+// TODO: Implement Q_WS_UBUNTU_TOUCH configure check and remove mirsink from the else case
+//#elif defined(HAVE_MIR)
+//    m_videoWindow = new QGstreamerVideoWindow(this, "mirsink");
 #else
+    qDebug() << "Creating new QGstreamerVideoWindow, passing 'this'" << endl;
+    //m_videoWindow = new QGstreamerVideoWindow(this, "mirsink");
     m_videoWindow = new QGstreamerVideoOverlay(this);
 #endif
     m_videoWidget = new QGstreamerVideoWidgetControl(this);

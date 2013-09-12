@@ -518,7 +518,7 @@ void QGstreamerPlayerSession::setVideoRenderer(QObject *videoOutput)
         }
     }
 
-    QGstreamerVideoRendererInterface* renderer = qobject_cast<QGstreamerVideoRendererInterface*>(videoOutput);   
+    QGstreamerVideoRendererInterface* renderer = qobject_cast<QGstreamerVideoRendererInterface*>(videoOutput);
 
     m_renderer = renderer;
 
@@ -837,6 +837,7 @@ bool QGstreamerPlayerSession::play()
 #ifdef DEBUG_PLAYBIN
     qDebug() << Q_FUNC_INFO;
 #endif
+
     m_everPlayed = false;
     if (m_playbin) {
         m_pendingState = QMediaPlayer::PlayingState;

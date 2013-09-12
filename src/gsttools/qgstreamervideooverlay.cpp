@@ -42,6 +42,7 @@
 #include "qgstreamervideooverlay_p.h"
 #include <private/qvideosurfacegstsink_p.h>
 
+#include <QtCore/qdebug.h>
 #include <qvideosurfaceformat.h>
 
 #include <qx11videosurface_p.h>
@@ -53,9 +54,14 @@ QGstreamerVideoOverlay::QGstreamerVideoOverlay(QObject *parent)
     , m_aspectRatioMode(Qt::KeepAspectRatio)
     , m_fullScreen(false)
 {
+    qDebug() << Q_FUNC_INFO;
     if (m_videoSink) {
-        gst_object_ref(GST_OBJECT(m_videoSink)); //Take ownership
-        //gst_object_sink(GST_OBJECT(m_videoSink));
+#if !GST_CHECK_VERSION(1,0,0)
+        gst_object_ref (GST_OBJECT (m_videoSink)); //Take ownership
+        gst_object_sink (GST_OBJECT (m_videoSink));
+#else
+        gst_object_ref_sink(GST_OBJECT (m_videoSink));
+#endif
     }
 
     connect(m_surface, SIGNAL(surfaceFormatChanged(QVideoSurfaceFormat)),

@@ -108,7 +108,7 @@ QGstreamerVideoWidgetControl::QGstreamerVideoWidgetControl(QObject *parent)
     , m_videoSink(0)
     , m_widget(0)
     , m_fullScreen(false)
-{    
+{
 }
 
 QGstreamerVideoWidgetControl::~QGstreamerVideoWidgetControl()
@@ -236,7 +236,7 @@ void QGstreamerVideoWidgetControl::updateNativeVideoSize()
 {
     if (m_videoSink) {
         //find video native size to update video widget size hint
-        GstPad *pad = gst_element_get_static_pad(m_videoSink,"sink");
+        GstPad *pad = gst_element_get_static_pad(m_videoSink, "sink");
 #if !GST_CHECK_VERSION(1,0,0)
         GstCaps *caps = gst_pad_get_negotiated_caps(pad);
 #else

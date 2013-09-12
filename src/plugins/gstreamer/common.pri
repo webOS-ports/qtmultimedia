@@ -20,6 +20,11 @@ PKGCONFIG += \
 
 maemo*:PKGCONFIG +=gstreamer-plugins-bad-$$GST_VERSION
 
+packagesExist(mirserver) {
+    DEFINES += HAVE_MIR
+    PKGCONFIG += mirserver
+}
+
 config_resourcepolicy {
     DEFINES += HAVE_RESOURCE_POLICY
     PKGCONFIG += libresourceqt1
