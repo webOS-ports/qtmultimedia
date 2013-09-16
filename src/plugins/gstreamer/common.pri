@@ -20,7 +20,7 @@ PKGCONFIG += \
 
 maemo*:PKGCONFIG +=gstreamer-plugins-bad-$$GST_VERSION
 
-packagesExist(mirserver) {
+mir: {
     DEFINES += HAVE_MIR
     PKGCONFIG += mirserver
 }
