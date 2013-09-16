@@ -22,7 +22,6 @@ maemo*:PKGCONFIG +=gstreamer-plugins-bad-$$GST_VERSION
 
 mir: {
     DEFINES += HAVE_MIR
-    PKGCONFIG += mirserver
 }
 
 config_resourcepolicy {
