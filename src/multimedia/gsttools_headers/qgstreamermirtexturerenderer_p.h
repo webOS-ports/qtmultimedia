@@ -88,7 +88,7 @@ private slots:
     void renderFrame();
 
 private:
-    QWindow *createOffscreenWindow(const QSurfaceFormat &format, int width, int height);
+    QWindow *createOffscreenWindow(const QSurfaceFormat &format);
     static void handleFrameReady(gpointer userData);
     static GstPadProbeReturn padBufferProbe(GstPad *pad, GstPadProbeInfo *info, gpointer userData);
 

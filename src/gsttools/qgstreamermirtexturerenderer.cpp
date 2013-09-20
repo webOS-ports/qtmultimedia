@@ -144,12 +144,13 @@ GstElement *QGstreamerMirTextureRenderer::videoSink()
     return m_videoSink;
 }
 
-QWindow *QGstreamerMirTextureRenderer::createOffscreenWindow(const QSurfaceFormat &format, int width, int height)
+QWindow *QGstreamerMirTextureRenderer::createOffscreenWindow(const QSurfaceFormat &format)
 {
     QWindow *w = new QWindow();
     w->setSurfaceType(QWindow::OpenGLSurface);
     w->setFormat(format);
-    w->setGeometry(0, 0, width, height);
+    w->setGeometry(0, 0, 1, 1);
+    w->setFlags(w->flags() | Qt::WindowTransparentForInput);
     w->create();
 
     return w;
@@ -329,9 +330,9 @@ void QGstreamerMirTextureRenderer::handleFocusWindowChanged(QWindow *window)
     // with the render thread GL context
     if (!currContext && !m_glContext) {
 
-        qDebug() << "Creating offscreenWindow of width: " << w->width() << " and height: " << w->height();
         // This emulates the new QOffscreenWindow class with Qt5.1
-        m_offscreenSurface = createOffscreenWindow(w->openglContext()->surface()->format(), w->width(), w->height());
+        m_offscreenSurface = createOffscreenWindow(w->openglContext()->surface()->format());
+        m_offscreenSurface->setParent(window);
 
         QOpenGLContext *shareContext = 0;
         if (m_surface)
