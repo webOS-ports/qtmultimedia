@@ -111,7 +111,7 @@ mir: {
     contains(QT_CONFIG, opengles2):qtHaveModule(widgets) {
         PRIVATE_HEADERS += qgstreamermirtexturerenderer_p.h
         SOURCES += qgstreamermirtexturerenderer.cpp
-        QT += opengl
+        QT += opengl quick
         LIBS += -lEGL
     }
     DEFINES += HAVE_MIR
