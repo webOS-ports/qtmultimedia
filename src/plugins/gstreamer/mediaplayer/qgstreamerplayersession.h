@@ -166,6 +166,7 @@ signals:
     void audioAvailableChanged(bool audioAvailable);
     void videoAvailableChanged(bool videoAvailable);
     void bufferingProgressChanged(int percentFilled);
+    void mediaStatusChanged(QMediaPlayer::MediaStatus status);
     void playbackFinished();
     void tagsChanged();
     void streamsChanged();

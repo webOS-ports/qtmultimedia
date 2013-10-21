@@ -103,7 +103,11 @@
 #define CAMERABIN_IMAGE_MODE 1
 #define CAMERABIN_VIDEO_MODE 2
 
+#if GST_CHECK_VERSION(1,0,0)
+#define gstRef(element) { gst_object_ref(GST_OBJECT(element)); gst_object_ref_sink(GST_OBJECT(element)); }
+#else
 #define gstRef(element) { gst_object_ref(GST_OBJECT(element)); gst_object_sink(GST_OBJECT(element)); }
+#endif
 #define gstUnref(element) { if (element) { gst_object_unref(GST_OBJECT(element)); element = 0; } }
 
 #define PREVIEW_CAPS_4_3 \
@@ -689,7 +693,11 @@ qint64 CameraBinSession::duration() const
     GstFormat   format = GST_FORMAT_TIME;
     gint64      duration = 0;
 
+#if GST_CHECK_VERSION(1,0,0)
+    if ( m_camerabin && gst_element_query_duration(m_camerabin, format, &duration))
+#else
     if ( m_camerabin && gst_element_query_position(m_camerabin, &format, &duration))
+#endif
         return duration / 1000000;
     else
         return 0;
@@ -722,8 +730,13 @@ void CameraBinSession::setMetaData(const QMap<QByteArray, QVariant> &data)
 
     if (m_camerabin) {
         GstIterator *elements = gst_bin_iterate_all_by_interface(GST_BIN(m_camerabin), GST_TYPE_TAG_SETTER);
+#if GST_CHECK_VERSION(1,0,0)
+        GValue *element = 0;
+        while (gst_iterator_next(elements, element) == GST_ITERATOR_OK) {
+#else
         GstElement *element = 0;
         while (gst_iterator_next(elements, (void**)&element) == GST_ITERATOR_OK) {
+#endif
             QMapIterator<QByteArray, QVariant> it(data);
             while (it.hasNext()) {
                 it.next();
@@ -770,7 +783,11 @@ bool CameraBinSession::processSyncMessage(const QGstreamerMessage &message)
 
     if (gm && GST_MESSAGE_TYPE(gm) == GST_MESSAGE_ELEMENT) {
         if (m_captureMode == QCamera::CaptureStillImage &&
+#if GST_CHECK_VERSION(1,0,0)
+            gst_message_has_name (gm, "preview-image")) {
+#else
             gst_structure_has_name(gm->structure, "preview-image")) {
+#endif
             st = gst_message_get_structure(gm);
 
             if (gst_structure_has_field_typed(st, "buffer", GST_TYPE_BUFFER)) {
@@ -780,7 +797,11 @@ bool CameraBinSession::processSyncMessage(const QGstreamerMessage &message)
 
                     QImage img;
 
+#if GST_CHECK_VERSION(1,0,0)
                     GstCaps *caps = gst_buffer_get_caps(buffer);
+#else
+                    GstCaps *caps = gst_buffer_get_caps(buffer);
+#endif
                     if (caps) {
                         GstStructure *structure = gst_caps_get_structure(caps, 0);
                         gint width = 0;
@@ -1051,7 +1072,11 @@ QList< QPair<int,int> > CameraBinSession::supportedFrameRates(const QSize &frame
         gst_structure_remove_all_fields(structure);
         gst_structure_set_value(structure, "framerate", &rate);
     }
+#if GST_CHECK_VERSION(1,0,0)
+    caps = gst_caps_simplify(caps);
+#else
     gst_caps_do_simplify(caps);
+#endif
 
 
     for (uint i=0; i<gst_caps_get_size(caps); i++) {
@@ -1171,7 +1196,11 @@ QList<QSize> CameraBinSession::supportedResolutions(QPair<int,int> rate,
         gst_structure_set_value(structure, "width", &w);
         gst_structure_set_value(structure, "height", &h);
     }
+#if GST_CHECK_VERSION(1,0,0)
+    caps = gst_caps_simplify(caps);
+#else
     gst_caps_do_simplify(caps);
+#endif
 
     for (uint i=0; i<gst_caps_get_size(caps); i++) {
         GstStructure *structure = gst_caps_get_structure(caps, i);

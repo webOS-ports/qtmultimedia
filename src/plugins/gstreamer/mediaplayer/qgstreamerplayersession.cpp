@@ -61,7 +61,7 @@
 #include <QtCore/qdir.h>
 #include <QtCore/qstandardpaths.h>
 
-#define DEBUG_PLAYBIN
+//#define DEBUG_PLAYBIN
 //#define DEBUG_VO_BIN_DUMP
 
 QT_BEGIN_NAMESPACE
@@ -772,7 +772,7 @@ void QGstreamerPlayerSession::finishVideoOutputChange()
 
 #ifdef DEBUG_VO_BIN_DUMP
     gst_debug_bin_to_dot_file_with_ts(GST_BIN(m_playbin),
-                                  GstDebugGraphDetails(GST_DEBUG_GRAPH_SHOW_ALL /* GST_DEBUG_GRAPH_SHOW_MEDIA_TYPE | GST_DEBUG_GRAPH_SHOW_NON_DEFAULT_PARAMS | GST_DEBUG_GRAPH_SHOW_STATES*/),
+                                  GstDebugGraphDetails(GST_DEBUG_GRAPH_SHOW_ALL /* | GST_DEBUG_GRAPH_SHOW_MEDIA_TYPE | GST_DEBUG_GRAPH_SHOW_NON_DEFAULT_PARAMS | GST_DEBUG_GRAPH_SHOW_STATES */),
                                   "playbin_finish");
 #endif
 }

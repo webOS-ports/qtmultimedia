@@ -329,7 +329,6 @@ void QGstreamerMirTextureRenderer::handleFocusWindowChanged(QWindow *window)
     // If we don't have a GL context in the current thread, create one and share it
     // with the render thread GL context
     if (!currContext && !m_glContext) {
-
         // This emulates the new QOffscreenWindow class with Qt5.1
         m_offscreenSurface = createOffscreenWindow(w->openglContext()->surface()->format());
         m_offscreenSurface->setParent(window);
