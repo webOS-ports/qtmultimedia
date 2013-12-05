@@ -58,7 +58,6 @@
 
 #include <gst/gst.h>
 
-static QGstreamerMirTextureRenderer *rendererInstance = NULL;
 
 class QGstreamerMirTextureBuffer : public QAbstractVideoBuffer
 {
@@ -99,7 +98,8 @@ QGstreamerMirTextureRenderer::QGstreamerMirTextureRenderer(QObject *parent
       m_glContext(0),
       m_textureId(0),
       m_offscreenSurface(0),
-      m_textureBuffer(0)
+      m_textureBuffer(0),
+      m_surfaceTextureClient(0)
 {
     Q_UNUSED(parent);
     setPlayerSession(playerSession);
@@ -118,9 +118,6 @@ GstElement *QGstreamerMirTextureRenderer::videoSink()
 {
     qDebug() << Q_FUNC_INFO;
 
-    // FIXME: Ugly hack until I figure out why passing this segfaults in the g_signal handler
-    rendererInstance = const_cast<QGstreamerMirTextureRenderer*>(this);
-
     if (!m_videoSink && m_surface) {
         qDebug() << Q_FUNC_INFO << ": using mirsink, (this: " << this << ")";
 
@@ -130,6 +127,9 @@ GstElement *QGstreamerMirTextureRenderer::videoSink()
                 this, SLOT(handleFocusWindowChanged(QWindow*)), Qt::QueuedConnection);
 
         g_signal_connect(G_OBJECT(m_videoSink), "frame-ready", G_CALLBACK(handleFrameReady),
+                (gpointer)this);
+
+        g_signal_connect(G_OBJECT(m_videoSink), "surface-texture-client", G_CALLBACK(handleSetSurfaceTextureClient),
                 (gpointer)this);
     }
 
@@ -156,17 +156,28 @@ QWindow *QGstreamerMirTextureRenderer::createOffscreenWindow(const QSurfaceForma
     return w;
 }
 
-void QGstreamerMirTextureRenderer::handleFrameReady(gpointer userData)
+void QGstreamerMirTextureRenderer::handleFrameReady(GstMirSink *sink, gpointer renderer)
 {
-    QGstreamerMirTextureRenderer *renderer = reinterpret_cast<QGstreamerMirTextureRenderer*>(userData);
-#if 1
-    QMutexLocker locker(&rendererInstance->m_mutex);
-    QMetaObject::invokeMethod(rendererInstance, "renderFrame", Qt::QueuedConnection);
-#else
-    // FIXME!
-    //QMutexLocker locker(&renderer->m_mutex);
-    QMetaObject::invokeMethod(renderer, "renderFrame", Qt::QueuedConnection);
-#endif
+    Q_UNUSED(sink);
+
+    QGstreamerMirTextureRenderer *r = reinterpret_cast<QGstreamerMirTextureRenderer*>(renderer);
+    QMutexLocker locker(&r->m_mutex);
+    QMetaObject::invokeMethod(r, "renderFrame", Qt::QueuedConnection);
+}
+
+void QGstreamerMirTextureRenderer::handleSetSurfaceTextureClient(GstMirSink *sink, gpointer surface_texture_client, gpointer renderer)
+{
+    Q_UNUSED(sink);
+
+    QGstreamerMirTextureRenderer *r = reinterpret_cast<QGstreamerMirTextureRenderer*>(renderer);
+    QMutexLocker locker(&r->m_mutex);
+    QMetaObject::invokeMethod(r, "setSurfaceTextureClient", Qt::QueuedConnection, Q_ARG(void*, surface_texture_client));
+}
+
+void QGstreamerMirTextureRenderer::setSurfaceTextureClient(void* surface_texture_client)
+{
+    m_surfaceTextureClient = surface_texture_client;
+    qDebug() << "surface_texture_client:  " << surface_texture_client << " (" << Q_FUNC_INFO << ")";
 }
 
 void QGstreamerMirTextureRenderer::renderFrame()
@@ -219,6 +230,8 @@ void QGstreamerMirTextureRenderer::renderFrame()
                       m_surface->surfaceFormat().pixelFormat());
 
     frame.setMetaData("TextureId", m_textureId);
+    //qDebug() << "SurfaceTextureClient (metadata): " << m_surfaceTextureClient;
+    frame.setMetaData("SurfaceTextureClient", reinterpret_cast<unsigned int>(m_surfaceTextureClient));
 
     // Display the video frame on the surface:
     m_surface->present(frame);

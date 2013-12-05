@@ -63,6 +63,9 @@ class QGstreamerMirTextureRenderer : public QVideoRendererControl, public QGstre
     Q_OBJECT
     Q_INTERFACES(QGstreamerVideoRendererInterface)
 public:
+    typedef void* GstMirSink;
+    typedef void* SurfaceTextureClientHybris;
+
     QGstreamerMirTextureRenderer(QObject *parent = 0, const QGstreamerPlayerSession *playerSession = 0);
     virtual ~QGstreamerMirTextureRenderer();
 
@@ -86,10 +89,13 @@ private slots:
     void updateNativeVideoSize();
     void handleFocusWindowChanged(QWindow *window);
     void renderFrame();
+    void setSurfaceTextureClient(void* surface_texture_client);
 
 private:
+
     QWindow *createOffscreenWindow(const QSurfaceFormat &format);
-    static void handleFrameReady(gpointer userData);
+    static void handleFrameReady(GstMirSink *sink, gpointer renderer);
+    static void handleSetSurfaceTextureClient(GstMirSink *sink, gpointer surface_texture_client, gpointer renderer);
     static GstPadProbeReturn padBufferProbe(GstPad *pad, GstPadProbeInfo *info, gpointer userData);
 
     GstElement *m_videoSink;
@@ -102,6 +108,7 @@ private:
     QGstreamerPlayerSession *m_playerSession;
     QGstreamerMirTextureBuffer *m_textureBuffer;
     QSize m_nativeSize;
+    SurfaceTextureClientHybris m_surfaceTextureClient;
 
     QMutex m_mutex;
 };
