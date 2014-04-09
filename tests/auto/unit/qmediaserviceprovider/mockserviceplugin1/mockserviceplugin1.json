@@ -1,4 +1,3 @@
 {
-    "Keys": ["mockserviceplugin1"],
-    "Services": ["org.qt-project.qt.mediaplayer"]
+    "Keys": ["org.qt-project.qt.mediaplayer"]
 }

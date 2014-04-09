@@ -47,7 +47,7 @@ QT_BEGIN_NAMESPACE
 /*!
     \qmltype Radio
     \instantiates QDeclarativeRadio
-    \inqmlmodule QtMultimedia
+    \inqmlmodule QtMultimedia 5.0
     \brief Access radio functionality from a QML application.
     \ingroup multimedia_qml
     \ingroup multimedia_radio_qml
@@ -126,7 +126,7 @@ QDeclarativeRadio::~QDeclarativeRadio()
 }
 
 /*!
-    \qmlproperty enumeration QtMultimedia::Radio::state
+    \qmlproperty enumeration QtMultimedia5::Radio::state
 
     This property holds the current state of the Radio.
 
@@ -148,7 +148,7 @@ QDeclarativeRadio::State QDeclarativeRadio::state() const
 }
 
 /*!
-    \qmlproperty enumeration QtMultimedia::Radio::band
+    \qmlproperty enumeration QtMultimedia5::Radio::band
 
     This property holds the frequency band used for the radio, which can be specified as
     any one of the values in the table below.
@@ -178,7 +178,7 @@ QDeclarativeRadio::Band QDeclarativeRadio::band() const
 }
 
 /*!
-    \qmlproperty int QtMultimedia::Radio::frequency
+    \qmlproperty int QtMultimedia5::Radio::frequency
 
     Sets the frequency in Hertz that the radio is tuned to. The frequency must be within the frequency
     range for the current band, otherwise it will be changed to be within the frequency range.
@@ -191,7 +191,7 @@ int QDeclarativeRadio::frequency() const
 }
 
 /*!
-    \qmlproperty enumeration QtMultimedia::Radio::stereoMode
+    \qmlproperty enumeration QtMultimedia5::Radio::stereoMode
 
     This property holds the stereo mode of the radio, which can be set to any one of the
     values in the table below.
@@ -215,7 +215,7 @@ QDeclarativeRadio::StereoMode QDeclarativeRadio::stereoMode() const
 }
 
 /*!
-    \qmlproperty int QtMultimedia::Radio::volume
+    \qmlproperty int QtMultimedia5::Radio::volume
 
     Set this property to control the volume of the radio. The valid range of the volume is from 0 to 100.
 */
@@ -225,7 +225,7 @@ int QDeclarativeRadio::volume() const
 }
 
 /*!
-    \qmlproperty bool QtMultimedia::Radio::muted
+    \qmlproperty bool QtMultimedia5::Radio::muted
 
     This property reflects whether the radio is muted or not.
 */
@@ -235,7 +235,7 @@ bool QDeclarativeRadio::muted() const
 }
 
 /*!
-    \qmlproperty bool QtMultimedia::Radio::stereo
+    \qmlproperty bool QtMultimedia5::Radio::stereo
 
     This property holds whether the radio is receiving a stereo signal or not. If \l stereoMode is
     set to ForceMono the value will always be false. Likewise, it will always be true if stereoMode
@@ -249,7 +249,7 @@ bool QDeclarativeRadio::stereo() const
 }
 
 /*!
-    \qmlproperty int QtMultimedia::Radio::signalStrength
+    \qmlproperty int QtMultimedia5::Radio::signalStrength
 
     The strength of the current radio signal as a percentage where 0% equals no signal, and 100% is a
     very good signal.
@@ -260,7 +260,7 @@ int QDeclarativeRadio::signalStrength() const
 }
 
 /*!
-    \qmlproperty bool QtMultimedia::Radio::searching
+    \qmlproperty bool QtMultimedia5::Radio::searching
 
     This property is true if the radio is currently searching for radio stations, for instance using the \l scanUp,
     \l scanDown, and \l searchAllStations methods. Once the search completes, or if it is cancelled using
@@ -272,7 +272,7 @@ bool QDeclarativeRadio::searching() const
 }
 
 /*!
-    \qmlproperty int QtMultimedia::Radio::frequencyStep
+    \qmlproperty int QtMultimedia5::Radio::frequencyStep
 
     The number of Hertz for each step when tuning the radio manually. The value is for the current \l band.
  */
@@ -282,7 +282,7 @@ int QDeclarativeRadio::frequencyStep() const
 }
 
 /*!
-    \qmlproperty int QtMultimedia::Radio::minimumFrequency
+    \qmlproperty int QtMultimedia5::Radio::minimumFrequency
 
     The minimum frequency for the current \l band.
  */
@@ -292,7 +292,7 @@ int QDeclarativeRadio::minimumFrequency() const
 }
 
 /*!
-    \qmlproperty int QtMultimedia::Radio::maximumFrequency
+    \qmlproperty int QtMultimedia5::Radio::maximumFrequency
 
     The maximum frequency for the current \l band.
  */
@@ -302,7 +302,7 @@ int QDeclarativeRadio::maximumFrequency() const
 }
 
 /*!
-    \qmlproperty int QtMultimedia::Radio::antennaConnected
+    \qmlproperty int QtMultimedia5::Radio::antennaConnected
 
     This property is true if there is an antenna connected. Otherwise it will be false.
  */
@@ -312,7 +312,7 @@ bool QDeclarativeRadio::isAntennaConnected() const
 }
 
 /*!
-    \qmlproperty enumeration QtMultimedia::Radio::availability
+    \qmlproperty enumeration QtMultimedia5::Radio::availability
 
     Returns the availability state of the radio.
 
@@ -367,7 +367,7 @@ void QDeclarativeRadio::setMuted(bool muted)
 }
 
 /*!
-    \qmlmethod QtMultimedia::Radio::cancelScan()
+    \qmlmethod QtMultimedia5::Radio::cancelScan()
 
     Cancel the current scan. Will also cancel a search started with \l searchAllStations.
  */
@@ -377,7 +377,7 @@ void QDeclarativeRadio::cancelScan()
 }
 
 /*!
-    \qmlmethod QtMultimedia::Radio::scanDown()
+    \qmlmethod QtMultimedia5::Radio::scanDown()
 
     Searches backward in the frequency range for the current band.
  */
@@ -387,7 +387,7 @@ void QDeclarativeRadio::scanDown()
 }
 
 /*!
-    \qmlmethod QtMultimedia::Radio::scanUp()
+    \qmlmethod QtMultimedia5::Radio::scanUp()
 
     Searches forward in the frequency range for the current band.
  */
@@ -397,7 +397,7 @@ void QDeclarativeRadio::scanUp()
 }
 
 /*!
-    \qmlmethod QtMultimedia::Radio::searchAllStations(enumeration searchMode)
+    \qmlmethod QtMultimedia5::Radio::searchAllStations(enumeration searchMode)
 
     Start searching the complete frequency range for the current band, and save all the
     radio stations found. The search mode can be either of the values described in the
@@ -461,7 +461,7 @@ void QDeclarativeRadio::searchAllStations(QDeclarativeRadio::SearchMode searchMo
 }
 
 /*!
-    \qmlmethod QtMultimedia::Radio::tuneDown()
+    \qmlmethod QtMultimedia5::Radio::tuneDown()
 
     Decrements the frequency by the frequency step for the current band. If the frequency is already set
     to the minimum frequency, calling this function has no effect.
@@ -476,7 +476,7 @@ void QDeclarativeRadio::tuneDown()
 }
 
 /*!
-    \qmlmethod QtMultimedia::Radio::tuneUp()
+    \qmlmethod QtMultimedia5::Radio::tuneUp()
 
     Increments the frequency by the frequency step for the current band. If the frequency is already set
     to the maximum frequency, calling this function has no effect.
@@ -491,7 +491,7 @@ void QDeclarativeRadio::tuneUp()
 }
 
 /*!
-    \qmlmethod QtMultimedia::Radio::start()
+    \qmlmethod QtMultimedia5::Radio::start()
 
     Starts the radio. If the radio is available, as determined by the \l availability property,
     this will result in the \l state becoming \c ActiveState.
@@ -502,7 +502,7 @@ void QDeclarativeRadio::start()
 }
 
 /*!
-    \qmlmethod QtMultimedia::Radio::stop()
+    \qmlmethod QtMultimedia5::Radio::stop()
 
     Stops the radio. After calling this method the \l state will be \c StoppedState.
  */
@@ -533,7 +533,7 @@ void QDeclarativeRadio::_q_availabilityChanged(QMultimedia::AvailabilityStatus a
 }
 
 /*!
-    \qmlsignal QtMultimedia::Radio::stationFound(int frequency, string stationId)
+    \qmlsignal QtMultimedia5::Radio::stationFound(int frequency, string stationId)
 
     This signal is emitted when a new radio station is found. This signal is only emitted
     if \l searchAllStations is called with \c SearchGetStationId.

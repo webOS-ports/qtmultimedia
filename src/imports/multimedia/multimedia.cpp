@@ -76,7 +76,6 @@ public:
         qmlRegisterType<QDeclarativeAudio>(uri, 5, 0, "Audio");
         qmlRegisterType<QDeclarativeAudio>(uri, 5, 0, "MediaPlayer");
         qmlRegisterType<QDeclarativeVideoOutput>(uri, 5, 0, "VideoOutput");
-        qmlRegisterType<QDeclarativeVideoOutput, 2>(uri, 5, 2, "VideoOutput");
         qmlRegisterType<QDeclarativeRadio>(uri, 5, 0, "Radio");
         qmlRegisterType<QDeclarativeRadioData>(uri, 5, 0, "RadioData");
         qmlRegisterType<QDeclarativeCamera>(uri, 5, 0, "Camera");

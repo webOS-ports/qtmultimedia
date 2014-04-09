@@ -47,8 +47,6 @@
 #include "audiomediarecordercontrol.h"
 #include "audiocaptureprobecontrol.h"
 
-QT_BEGIN_NAMESPACE
-
 AudioCaptureService::AudioCaptureService(QObject *parent):
     QMediaService(parent)
 {
@@ -96,4 +94,4 @@ void AudioCaptureService::releaseControl(QMediaControl *control)
     Q_UNUSED(control)
 }
 
-QT_END_NAMESPACE
+

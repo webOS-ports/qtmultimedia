@@ -13,9 +13,8 @@ qtHaveModule(widgets) {
         audiooutput \
 }
 
-qtHaveModule(quick) {
+qtHaveModule(gui):qtHaveModule(qml) {
     SUBDIRS += \
-        declarative-camera \
         declarative-radio \
         video
 }

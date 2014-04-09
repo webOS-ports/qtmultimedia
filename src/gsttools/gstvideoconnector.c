@@ -148,12 +148,12 @@ gst_video_connector_class_init (GstVideoConnectorClass * klass)
                           0, NULL, NULL,
                           g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
 
-    GST_DEBUG_CATEGORY_INIT(video_connector_debug, "video-connector", 0,
-                            "An identity like element for reconnecting video stream");
+    GST_DEBUG_CATEGORY_INIT (video_connector_debug, "video-connector", 0, 
+                             "An identity like element for reconnecting video stream");
 
 }
 
-#else
+#else 
 
 static void
 gst_video_connector_base_init (gpointer g_class)
@@ -215,7 +215,7 @@ gst_video_connector_init (GstVideoConnector *element
     gst_pad_set_chain_function(element->sinkpad,
                                GST_DEBUG_FUNCPTR (gst_video_connector_chain));
 #if GST_CHECK_VERSION(1,0,0)
-    /* gstreamer 1.x uses QUERIES and EVENTS for allocation and caps handiling purposes */
+    /* gstreamer 1.x uses QUERYS and EVENTS for allocation and caps handiling purposes */
     GST_OBJECT_FLAG_SET (element->sinkpad, GST_PAD_FLAG_PROXY_CAPS);
     GST_OBJECT_FLAG_SET (element->sinkpad, GST_PAD_FLAG_PROXY_ALLOCATION);
 #else
@@ -237,13 +237,13 @@ gst_video_connector_init (GstVideoConnector *element
             gst_pad_new_from_static_template (&gst_video_connector_src_factory,
                                               "src");
 #if GST_CHECK_VERSION(1,0,0)
-    gst_pad_add_probe(element->srcpad, GST_PAD_PROBE_TYPE_BUFFER,
+    gst_pad_add_probe(element->srcpad, GST_PAD_PROBE_TYPE_BUFFER, 
                              gst_video_connector_new_buffer_probe, element, NULL);
-    gst_pad_add_probe(element->srcpad, GST_PAD_PROBE_TYPE_QUERY_DOWNSTREAM,
+    gst_pad_add_probe(element->srcpad, GST_PAD_PROBE_TYPE_QUERY_DOWNSTREAM, 
                              gst_video_connector_new_query_probe, element, NULL);
-    gst_pad_add_probe(element->sinkpad, GST_PAD_PROBE_TYPE_EVENT_DOWNSTREAM,
+    gst_pad_add_probe(element->sinkpad, GST_PAD_PROBE_TYPE_EVENT_DOWNSTREAM, 
                              gst_video_connector_new_event_probe, element, NULL);
-#else
+#else 
     gst_pad_add_buffer_probe(element->srcpad,
                              G_CALLBACK(gst_video_connector_new_buffer_probe), element);
 #endif
@@ -603,7 +603,7 @@ static gboolean gst_video_connector_handle_sink_event (GstPad * pad, GstObject* 
     GstVideoConnector *element = GST_VIDEO_CONNECTOR (gst_pad_get_parent (pad));
 
     switch (GST_EVENT_TYPE (event)) {
-      case GST_EVENT_SEGMENT:
+      case GST_EVENT_SEGMENT: 
       break;
       case GST_EVENT_CAPS:
       break;

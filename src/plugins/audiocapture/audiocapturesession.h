@@ -55,7 +55,7 @@
 #include <qaudioinput.h>
 #include <qaudiodeviceinfo.h>
 
-QT_BEGIN_NAMESPACE
+QT_USE_NAMESPACE
 
 class AudioCaptureProbeControl;
 
@@ -85,58 +85,50 @@ public:
     ~AudioCaptureSession();
 
     QAudioFormat format() const;
-    void setFormat(const QAudioFormat &format);
-
+    QAudioDeviceInfo* deviceInfo() const;
+    bool isFormatSupported(const QAudioFormat &format) const;
+    bool setFormat(const QAudioFormat &format);
+    QStringList supportedContainers() const;
     QString containerFormat() const;
     void setContainerFormat(const QString &formatMimeType);
+    QString containerDescription(const QString &formatMimeType) const;
 
     QUrl outputLocation() const;
-    bool setOutputLocation(const QUrl& location);
-
+    bool setOutputLocation(const QUrl& sink);
     qint64 position() const;
-
-    void setState(QMediaRecorder::State state);
-    QMediaRecorder::State state() const;
-    QMediaRecorder::Status status() const;
-
+    int state() const;
+    void record();
+    void pause();
+    void stop();
     void addProbe(AudioCaptureProbeControl *probe);
     void removeProbe(AudioCaptureProbeControl *probe);
 
+public slots:
     void setCaptureDevice(const QString &deviceName);
 
 signals:
     void stateChanged(QMediaRecorder::State state);
-    void statusChanged(QMediaRecorder::Status status);
     void positionChanged(qint64 position);
-    void actualLocationChanged(const QUrl &location);
     void error(int error, const QString &errorString);
 
 private slots:
-    void audioInputStateChanged(QAudio::State state);
+    void stateChanged(QAudio::State state);
     void notify();
 
 private:
-    void record();
-    void pause();
-    void stop();
-
-    void setStatus(QMediaRecorder::Status status);
-
     QDir defaultDir() const;
-    QString generateFileName(const QString &requestedName,
-                             const QString &extension) const;
-    QString generateFileName(const QDir &dir, const QString &extension) const;
+    QString generateFileName(const QDir &dir, const QString &ext) const;
 
     FileProbeProxy file;
     QString m_captureDevice;
-    QUrl m_requestedOutputLocation;
-    QUrl m_actualOutputLocation;
+    QUrl m_sink;
+    QUrl m_actualSink;
     QMediaRecorder::State m_state;
-    QMediaRecorder::Status m_status;
     QAudioInput *m_audioInput;
-    QAudioDeviceInfo m_deviceInfo;
+    QAudioDeviceInfo *m_deviceInfo;
     QAudioFormat m_format;
-    bool m_wavFile;
+    qint64 m_position;
+    bool wavFile;
 
     // WAV header stuff
 
@@ -178,7 +170,5 @@ private:
 
     CombinedHeader      header;
 };
-
-QT_END_NAMESPACE
 
 #endif

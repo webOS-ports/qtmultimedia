@@ -2,7 +2,7 @@ include($QT_INSTALL_DOCS/global/qt-module-defaults.qdocconf)
 
 project                 = QtMultimedia
 description             = Qt Multimedia Documentation
-url                     = http://qt-project.org/doc/qt-$QT_VER
+url                     = http://qt-project.org/doc/qt-$QT_VER/qtmultimedia
 version                 = $QT_VERSION
 
 # The following parameters are for creating a qhp file, the qhelpgenerator
@@ -44,7 +44,3 @@ sourcedirs += ../..
 excludedirs += ../../multimediawidgets
 
 depends                 += qtcore qtdoc qtquick qtqml qtmultimediawidgets
-
-navigation.landingpage = "Qt Multimedia"
-navigation.cppclassespage = "Qt Multimedia C++ Classes"
-navigation.qmltypespage = "Qt Multimedia QML Types"

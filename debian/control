@@ -1,0 +1,181 @@
+Source: qtmultimedia-opensource-src-touch
+Section: libs
+Priority: extra
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+XSBC-Original-Maintainer: Debian Qt/KDE Maintainers <debian-qt-kde@lists.debian.org>
+Uploaders: Fathi Boudra <fabo@debian.org>,
+           Modestas Vainius <modax@debian.org>,
+           Sune Vuorela <debian@pusling.com>,
+           Pino Toscano <pino@debian.org>,
+           Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>,
+           Timo Jyrinki <timo@debian.org>
+Build-Depends: debhelper (>= 9.0.0),
+               qtbase5-dev (>= 5.2.1+dfsg~),
+               libqt5opengl5-dev (>= 5.2.1+dfsg~),
+               qtbase5-private-dev (>= 5.2.1+dfsg~),
+               qtdeclarative5-private-dev (>= 5.2.1~),
+               libasound2-dev [linux-any],
+               libpulse-dev,
+               libgstreamer-plugins-base1.0-dev,
+               libopenal-dev,
+               libgstreamer1.0-dev,
+               zlib1g-dev,
+               pkg-kde-tools,
+Build-Depends-Indep: libqt5sql5-sqlite,
+                     qttools5-dev-tools (>= 5.2.1~)
+Standards-Version: 3.9.5
+Homepage: https://qt-project.org/
+Vcs-Git: git://github.com/jhodapp/qtmultimedia.git
+Vcs-Browser: https://github.com/jhodapp/qtmultimedia
+Vcs-Bzr: https://code.launchpad.net/~phablet-team/phablet-extras/qtmultimedia-touch
+
+Package: libqt5multimedia5-touch
+Architecture: any
+Multi-Arch: same
+Pre-Depends: dpkg (>= 1.15.6~), ${misc:Pre-Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: Qt 5 Multimedia module
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains a set of APIs to play and record media, and manage a
+ collection of media content.
+
+Package: libqt5multimedia5-touch-plugins
+Architecture: any
+Multi-Arch: same
+Pre-Depends: dpkg (>= 1.15.6~), ${misc:Pre-Depends}
+Depends: libqt5multimedia5-touch (= ${binary:Version}), ${misc:Depends},
+ ${shlibs:Depends}
+Description: Qt 5 Multimedia module plugins
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains a set of plugins for supporting m3u, pulseaudio
+ and GStreamer.
+
+Package: libqt5multimediaquick-p5-touch
+Architecture: any
+Multi-Arch: same
+Pre-Depends: dpkg (>= 1.15.6~), ${misc:Pre-Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: Qt 5 Multimedia Quick module
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains a set of APIs to play and record media, and manage a
+ collection of media content with the Quick module.
+
+Package: libqt5multimediawidgets5-touch
+Architecture: any
+Multi-Arch: same
+Pre-Depends: dpkg (>= 1.15.6~), ${misc:Pre-Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: Qt 5 Multimedia Widgets module
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains a set of widgets to play and record media, and manage a
+ collection of media content.
+
+Package: qtdeclarative5-qtmultimedia-touch-plugin
+Architecture: any
+Multi-Arch: same
+Pre-Depends: dpkg (>= 1.15.6~), ${misc:Pre-Depends}
+Depends: libqt5multimedia5-touch-plugins, ${misc:Depends}, ${shlibs:Depends}
+Description: Qt 5 Multimedia QML plugin
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the Multimedia QML plugin for QtDeclarative.
+
+Package: qtdeclarative5-qtaudioengine-touch-plugin
+Architecture: any
+Multi-Arch: same
+Pre-Depends: dpkg (>= 1.15.6~), ${misc:Pre-Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: Qt 5 AudioEngine QML plugin
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the AudioEngine QML plugin for QtDeclarative.
+
+Package: libqgsttools-p1-touch
+Architecture: any
+Multi-Arch: same
+Pre-Depends: dpkg (>= 1.15.6~), ${misc:Pre-Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: GStreamer tools for  Qt 5 Multimedia module
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the GStreamer tools for Qt 5 Multimedia module.
+
+Package: qtmultimedia5-touch-examples
+Architecture: any
+Multi-Arch: same
+Section: x11
+Pre-Depends: dpkg (>= 1.15.6~), ${misc:Pre-Depends}
+Depends: libqt5multimedia5-touch-plugins (= ${binary:Version}),
+         qtdeclarative5-qtmultimedia-touch-plugin (= ${binary:Version}),
+         qtdeclarative5-qtquick2-plugin,
+         qtdeclarative5-folderlistmodel-plugin,
+         ${misc:Depends},
+         ${shlibs:Depends}
+Conflicts: qtmultimedia5-examples
+Description: Examples for Qt 5 Multimedia module
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the examples for Qt5 multimedia application
+ development.
+
+Package: qtmultimedia5-touch-dev
+Architecture: any
+Section: libdevel
+Pre-Depends: dpkg (>= 1.15.6~)
+Depends: libqgsttools-p1-touch (= ${binary:Version}),
+         libqt5multimedia5-touch (= ${binary:Version}),
+         libqt5multimediaquick-p5-touch (= ${binary:Version}),
+         libqt5multimediawidgets5-touch (= ${binary:Version}),
+         qtbase5-dev,
+         ${misc:Depends}
+Conflicts: qtmultimedia5-dev
+Description: APIs for multimedia functionality - development files
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the development files needed to build Qt applications
+ using Qt Multimedia libraries.
+
+Package: qtmultimedia5-touch-dbg
+Architecture: any
+Multi-Arch: same
+Section: debug
+Depends: libqt5multimedia5-touch (= ${binary:Version}),
+         ${misc:Depends}
+Conflicts: qtmultimedia5-dbg
+Suggests: qtmultimedia5-touch-examples (= ${binary:Version})
+Description: Qt 5 Multimedia library debugging symbols
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the debugging symbols for the Qt 5 Multimedia
+ libraries.
+
+Package: qtmultimedia5-touch-private-dev
+Architecture: any
+Section: libdevel
+Pre-Depends: dpkg (>= 1.15.6~)
+Depends: qtmultimedia5-touch-dev (= ${binary:Version}), ${misc:Depends}
+Conflicts: qtmultimedia5-private-dev
+Description: APIs for multimedia functionality - private development files
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the private header development files for building some
+ Qt 5 applications like Qt Creator QML Designer plugin.
+ .
+ Use at your own risk.
+
+

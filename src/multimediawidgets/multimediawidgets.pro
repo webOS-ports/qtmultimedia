@@ -28,6 +28,14 @@ SOURCES += \
     qvideowidgetcontrol.cpp \
     qvideowidget.cpp
 
+mac:!ios {
+    !simulator {
+        PRIVATE_HEADERS += qpaintervideosurface_mac_p.h
+        OBJECTIVE_SOURCES += qpaintervideosurface_mac.mm
+    }
+    LIBS += -framework AppKit -framework QuartzCore -framework QTKit
+}
+
 maemo6 {
     contains(QT_CONFIG, opengles2) {
         PRIVATE_HEADERS += qeglimagetexturesurface_p.h
@@ -35,7 +43,7 @@ maemo6 {
 
         SOURCES += qgraphicsvideoitem_maemo6.cpp
 
-        LIBS_PRIVATE += -lX11
+        LIBS += -lX11
     } else {
         SOURCES += qgraphicsvideoitem.cpp
     }

@@ -50,9 +50,9 @@ QT_USE_NAMESPACE
 /*!
     \qmltype AudioListener
     \instantiates QDeclarativeAudioListener
-    \since 5.0
+    \since 1.0
     \brief Control global listener parameters.
-    \inqmlmodule QtAudioEngine
+    \inqmlmodule QtAudioEngine 1.0
     \ingroup multimedia_audioengine
     \inherits Item
     \preliminary

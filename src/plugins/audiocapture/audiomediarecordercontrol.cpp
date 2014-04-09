@@ -44,22 +44,15 @@
 
 #include <QtCore/qdebug.h>
 
-QT_BEGIN_NAMESPACE
-
 AudioMediaRecorderControl::AudioMediaRecorderControl(QObject *parent)
-    : QMediaRecorderControl(parent)
+    :QMediaRecorderControl(parent)
+    , m_state(QMediaRecorder::StoppedState)
+    , m_prevStatus(QMediaRecorder::UnloadedStatus)
 {
     m_session = qobject_cast<AudioCaptureSession*>(parent);
-    connect(m_session, SIGNAL(positionChanged(qint64)),
-            this, SIGNAL(durationChanged(qint64)));
-    connect(m_session, SIGNAL(stateChanged(QMediaRecorder::State)),
-            this, SIGNAL(stateChanged(QMediaRecorder::State)));
-    connect(m_session, SIGNAL(statusChanged(QMediaRecorder::Status)),
-            this, SIGNAL(statusChanged(QMediaRecorder::Status)));
-    connect(m_session, SIGNAL(actualLocationChanged(QUrl)),
-            this, SIGNAL(actualLocationChanged(QUrl)));
-    connect(m_session, SIGNAL(error(int,QString)),
-            this, SIGNAL(error(int,QString)));
+    connect(m_session,SIGNAL(positionChanged(qint64)),this,SIGNAL(durationChanged(qint64)));
+    connect(m_session,SIGNAL(stateChanged(QMediaRecorder::State)), this,SLOT(updateStatus()));
+    connect(m_session,SIGNAL(error(int,QString)),this,SLOT(handleSessionError(int,QString)));
 }
 
 AudioMediaRecorderControl::~AudioMediaRecorderControl()
@@ -78,12 +71,21 @@ bool AudioMediaRecorderControl::setOutputLocation(const QUrl& sink)
 
 QMediaRecorder::State AudioMediaRecorderControl::state() const
 {
-    return m_session->state();
+    return (QMediaRecorder::State)m_session->state();
 }
 
 QMediaRecorder::Status AudioMediaRecorderControl::status() const
 {
-    return m_session->status();
+    static QMediaRecorder::Status statusTable[3][3] = {
+        //Stopped recorder state:
+        { QMediaRecorder::LoadedStatus, QMediaRecorder::FinalizingStatus, QMediaRecorder::FinalizingStatus },
+        //Recording recorder state:
+        { QMediaRecorder::StartingStatus, QMediaRecorder::RecordingStatus, QMediaRecorder::PausedStatus },
+        //Paused recorder state:
+        { QMediaRecorder::StartingStatus, QMediaRecorder::RecordingStatus, QMediaRecorder::PausedStatus }
+    };
+
+    return statusTable[m_state][m_session->state()];
 }
 
 qint64 AudioMediaRecorderControl::duration() const
@@ -104,19 +106,47 @@ qreal AudioMediaRecorderControl::volume() const
 
 void AudioMediaRecorderControl::setState(QMediaRecorder::State state)
 {
-    m_session->setState(state);
+    if (m_state == state)
+        return;
+
+    m_state = state;
+
+    switch (state) {
+    case QMediaRecorder::StoppedState:
+        m_session->stop();
+        break;
+    case QMediaRecorder::PausedState:
+        m_session->pause();
+        break;
+    case QMediaRecorder::RecordingState:
+        m_session->record();
+        break;
+    }
+
+    updateStatus();
 }
 
-void AudioMediaRecorderControl::setMuted(bool muted)
+void AudioMediaRecorderControl::setMuted(bool)
 {
-    if (muted)
-        qWarning("Muting the audio recording is not supported.");
 }
 
 void AudioMediaRecorderControl::setVolume(qreal volume)
 {
     if (!qFuzzyCompare(volume, qreal(1.0)))
-        qWarning("Changing the audio recording volume is not supported.");
+        qWarning() << "Media service doesn't support recorder audio gain.";
 }
 
-QT_END_NAMESPACE
+void AudioMediaRecorderControl::updateStatus()
+{
+    QMediaRecorder::Status newStatus = status();
+    if (m_prevStatus != newStatus) {
+        m_prevStatus = newStatus;
+        emit statusChanged(m_prevStatus);
+    }
+}
+
+void AudioMediaRecorderControl::handleSessionError(int code, const QString &description)
+{
+    emit error(code, description);
+    setState(QMediaRecorder::StoppedState);
+}

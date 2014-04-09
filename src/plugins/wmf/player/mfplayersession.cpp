@@ -1326,6 +1326,8 @@ void MFPlayerSession::start()
     switch (m_status) {
     case QMediaPlayer::EndOfMedia:
         m_varStart.hVal.QuadPart = 0;
+        //since it must be loaded already, just fallthrough
+    case QMediaPlayer::LoadedMedia:
         changeStatus(QMediaPlayer::BufferedMedia);
         return;
     }
@@ -1875,22 +1877,11 @@ void MFPlayerSession::handleSessionEvent(IMFMediaEvent *sessionEvent)
             emit error(QMediaPlayer::FormatError, tr("Unsupported media, a codec is missing."), true);
         } else {
             if (m_audioSampleGrabberNode) {
-                IUnknown *obj = 0;
-                if (SUCCEEDED(m_audioSampleGrabberNode->GetObject(&obj))) {
-                    IMFStreamSink *streamSink = 0;
-                    if (SUCCEEDED(obj->QueryInterface(IID_PPV_ARGS(&streamSink)))) {
-                        IMFMediaTypeHandler *typeHandler = 0;
-                        if (SUCCEEDED(streamSink->GetMediaTypeHandler((&typeHandler)))) {
-                            IMFMediaType *mediaType = 0;
-                            if (SUCCEEDED(typeHandler->GetCurrentMediaType(&mediaType))) {
-                                m_audioSampleGrabber->setFormat(audioFormatForMFMediaType(mediaType));
-                                mediaType->Release();
-                            }
-                            typeHandler->Release();
-                        }
-                        streamSink->Release();
-                    }
-                    obj->Release();
+                IMFMediaType *mediaType = 0;
+                hr = MFGetTopoNodeCurrentType(m_audioSampleGrabberNode, 0, FALSE, &mediaType);
+                if (SUCCEEDED(hr)) {
+                    m_audioSampleGrabber->setFormat(audioFormatForMFMediaType(mediaType));
+                    mediaType->Release();
                 }
             }
 
@@ -1920,14 +1911,19 @@ void MFPlayerSession::handleSessionEvent(IMFMediaEvent *sessionEvent)
 
     switch (meType) {
     case MEBufferingStarted:
-        changeStatus(m_status == QMediaPlayer::LoadedMedia ? QMediaPlayer::BufferingMedia : QMediaPlayer::StalledMedia);
+        changeStatus(QMediaPlayer::StalledMedia);
         emit bufferStatusChanged(bufferStatus());
         break;
     case MEBufferingStopped:
-        if (m_status == QMediaPlayer::BufferingMedia)
-            stop(true);
         changeStatus(QMediaPlayer::BufferedMedia);
         emit bufferStatusChanged(bufferStatus());
+        break;
+    case MEEndOfPresentation:
+        stop();
+        changeStatus(QMediaPlayer::EndOfMedia);
+        m_varStart.vt = VT_I8;
+        //keep reporting the final position after end of media
+        m_varStart.hVal.QuadPart = m_duration;
         break;
     case MESessionEnded:
         m_pendingState = NoPending;
@@ -1935,13 +1931,6 @@ void MFPlayerSession::handleSessionEvent(IMFMediaEvent *sessionEvent)
         m_state.prevCmd = CmdNone;
         m_request.command = CmdNone;
         m_request.prevCmd = CmdNone;
-
-        m_varStart.vt = VT_I8;
-        //keep reporting the final position after end of media
-        m_varStart.hVal.QuadPart = m_duration;
-        emit positionChanged(position());
-
-        changeStatus(QMediaPlayer::EndOfMedia);
         break;
     case MEEndOfPresentationSegment:
         break;
@@ -1990,21 +1979,9 @@ void MFPlayerSession::handleSessionEvent(IMFMediaEvent *sessionEvent)
                         }
                     }
                     MFGetService(m_session, MFNETSOURCE_STATISTICS_SERVICE, IID_PPV_ARGS(&m_netsourceStatistics));
-
-                    if (!m_netsourceStatistics || bufferStatus() == 100) {
-                        // If the source reader doesn't implement the statistics service, just set the status
-                        // to buffered, since there is no way to query the buffering progress...
-                        changeStatus(QMediaPlayer::BufferedMedia);
-                    } else {
-                        // Start to trigger buffering. Once enough buffering is done, the session will
-                        // be automatically stopped unless the user has explicitly started playback.
-                        start();
-                    }
                 }
             }
         }
-        break;
-    default:
         break;
     }
 

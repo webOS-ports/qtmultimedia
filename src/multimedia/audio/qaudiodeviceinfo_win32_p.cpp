@@ -469,22 +469,20 @@ QList<QByteArray> QAudioDeviceInfoInternal::availableDevices(QAudio::Mode mode)
 
 QByteArray QAudioDeviceInfoInternal::defaultOutputDevice()
 {
-    QByteArray defaultDevice;
-    QDataStream ds(&defaultDevice, QIODevice::WriteOnly);
-    ds << quint32(WAVE_MAPPER) // device ID for default device
-       << QStringLiteral("Default Output Device");
-
-    return defaultDevice;
+    QList<QByteArray> list = availableDevices(QAudio::AudioOutput);
+    if (list.size() > 0)
+        return list.at(0);
+    else
+        return QByteArray();
 }
 
 QByteArray QAudioDeviceInfoInternal::defaultInputDevice()
 {
-    QByteArray defaultDevice;
-    QDataStream ds(&defaultDevice, QIODevice::WriteOnly);
-    ds << quint32(WAVE_MAPPER) // device ID for default device
-       << QStringLiteral("Default Input Device");
-
-    return defaultDevice;
+    QList<QByteArray> list = availableDevices(QAudio::AudioInput);
+    if (list.size() > 0)
+        return list.at(0);
+    else
+        return QByteArray();
 }
 
 QT_END_NAMESPACE

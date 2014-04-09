@@ -47,6 +47,9 @@
 #include <QtWidgets/qapplication.h>
 #include <QtGui/qpainter.h>
 
+#ifdef Q_WS_X11
+#  include <X11/Xlib.h>
+#endif
 #include <gst/gst.h>
 
 #if !GST_CHECK_VERSION(1,0,0)
@@ -105,7 +108,7 @@ QGstreamerVideoWidgetControl::QGstreamerVideoWidgetControl(QObject *parent)
     , m_videoSink(0)
     , m_widget(0)
     , m_fullScreen(false)
-{    
+{
 }
 
 QGstreamerVideoWidgetControl::~QGstreamerVideoWidgetControl()

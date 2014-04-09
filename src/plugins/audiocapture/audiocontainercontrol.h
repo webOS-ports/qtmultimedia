@@ -47,9 +47,9 @@
 #include <QtCore/qstringlist.h>
 #include <QtCore/qmap.h>
 
-QT_BEGIN_NAMESPACE
-
 class AudioCaptureSession;
+
+QT_USE_NAMESPACE
 
 class AudioContainerControl : public QMediaContainerControl
 {
@@ -66,7 +66,5 @@ public:
 private:
     AudioCaptureSession* m_session;
 };
-
-QT_END_NAMESPACE
 
 #endif

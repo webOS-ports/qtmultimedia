@@ -44,7 +44,6 @@
 
 #include <qaudiodeviceinfo.h>
 
-QT_BEGIN_NAMESPACE
 
 AudioInputSelector::AudioInputSelector(QObject *parent)
     :QAudioInputSelectorControl(parent)
@@ -80,7 +79,7 @@ QString AudioInputSelector::inputDescription(const QString& name) const
 
 QString AudioInputSelector::defaultInput() const
 {
-    return QAudioDeviceInfo::defaultInputDevice().deviceName();
+    return QAudioDeviceInfo(QAudioDeviceInfo::defaultInputDevice()).deviceName();
 }
 
 QString AudioInputSelector::activeInput() const
@@ -109,5 +108,3 @@ void AudioInputSelector::update()
         m_descriptions.append(devices.at(i).deviceName());
     }
 }
-
-QT_END_NAMESPACE

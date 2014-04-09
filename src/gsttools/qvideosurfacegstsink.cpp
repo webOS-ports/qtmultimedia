@@ -49,9 +49,13 @@
 #include <private/qmediapluginloader_p.h>
 #include "qgstvideobuffer_p.h"
 
+#if defined(HAVE_XVIDEO)
+#include "qgstxvimagebuffer_p.h"
+#endif
+
 #include "qvideosurfacegstsink_p.h"
 
-#if GST_VERSION_MAJOR >=1
+#if GST_VERSION_MAJOR >=1 
 #include <gst/video/video.h>
 #endif
 
@@ -80,7 +84,10 @@ QVideoSurfaceGstDelegate::QVideoSurfaceGstDelegate(
                 m_pools.append(plugin);
             }
         }
-
+#if defined(HAVE_XVIDEO)
+// && !GST_CHECK_VERSION(1,0,0)
+        m_pools.append(new QGstXvImageBufferPool(this));
+#endif
         updateSupportedFormats();
         connect(m_surface, SIGNAL(supportedFormatsChanged()), this, SLOT(updateSupportedFormats()));
     }
@@ -369,7 +376,7 @@ static int indexOfYuvColor(QVideoFrame::PixelFormat format)
     return -1;
 }
 
-#if GST_VERSION_MAJOR >=1
+#if GST_VERSION_MAJOR >=1 
 static int indexOfYuvColor(GstVideoFormat vfmt)
 #else
 static int indexOfYuvColor(guint32 fourcc)
@@ -378,7 +385,7 @@ static int indexOfYuvColor(guint32 fourcc)
     const int count = sizeof(qt_yuvColorLookup) / sizeof(YuvFormat);
 
     for (int i = 0; i < count; ++i)
-#if GST_VERSION_MAJOR >=1
+#if GST_VERSION_MAJOR >=1 
         if (qt_yuvColorLookup[i].vfmt == vfmt)
 #else
         if (qt_yuvColorLookup[i].fourcc == fourcc)
@@ -825,14 +832,13 @@ QVideoSurfaceFormat QVideoSurfaceGstSink::formatForCaps(GstCaps *caps, int *byte
 
 void QVideoSurfaceGstSink::setFrameTimeStamps(QVideoFrame *frame, GstBuffer *buffer)
 {
-    // GStreamer uses nanoseconds, Qt uses microseconds
     qint64 startTime = GST_BUFFER_TIMESTAMP(buffer);
     if (startTime >= 0) {
-        frame->setStartTime(startTime/G_GINT64_CONSTANT (1000));
+        frame->setStartTime(startTime/G_GINT64_CONSTANT (1000000));
 
         qint64 duration = GST_BUFFER_DURATION(buffer);
         if (duration >= 0)
-            frame->setEndTime((startTime + duration)/G_GINT64_CONSTANT (1000));
+            frame->setEndTime((startTime + duration)/G_GINT64_CONSTANT (1000000));
     }
 }
 

@@ -1,0 +1,244 @@
+qtmultimedia-opensource-src-touch (5.1.1+git20131205+8230c02-0ubuntu4) trusty; urgency=medium
+
+  * Updating for 5.2 migration:
+    - Depending on qt >= 5.2.1 for the ABI change
+    - Updating symbols (qreal in armhf) 
+    - Adjusting diverts for 5.2.
+    - Fixing pri files to adapt to new paths 
+  * Fixing qtdeclarative control file 
+  * Updating standards to 3.9.5
+  * Adding syncqt.pl from qtbase-opensource-src to sync headers and using in
+    during configure. 
+
+ -- Sergio Schvezov <sergio.schvezov@canonical.com>  Wed, 26 Feb 2014 17:42:55 -0300
+
+qtmultimedia-opensource-src-touch (5.1.1+git20131205+8230c02-0ubuntu3) trusty; urgency=medium
+
+  * Fixing symbols table for libqgsttools-p1-touch.
+
+ -- Sergio Schvezov <sergio.schvezov@canonical.com>  Thu, 06 Feb 2014 17:37:19 -0300
+
+qtmultimedia-opensource-src-touch (5.1.1+git20131205+8230c02-0ubuntu2) trusty; urgency=medium
+
+  * Fix remove/add for qtdeclarative5-qtmultimedia-touch-plugin
+    (LP: #1275690)
+
+ -- Sergio Schvezov <sergio.schvezov@canonical.com>  Wed, 05 Feb 2014 10:56:53 -0300
+
+qtmultimedia-opensource-src-touch (5.1.1+git20131205+8230c02-0ubuntu1) trusty; urgency=low
+
+  * New upstream snapshot:
+    - Updated to support passing a SurfaceTextureClientHybris instance
+      embedded in the frame's metadata. This removes the need for a singleton
+      SurfaceTextureClientHybris instance in the hybris media layer.
+
+ -- Ricardo Salveti de Araujo <ricardo.salveti@canonical.com>  Mon, 23 Dec 2013 16:19:02 -0200
+
+qtmultimedia-opensource-src-touch (5.1.1+git20130920+5b12abb862-0ubuntu4) trusty; urgency=low
+
+  * fix preinst and postrm to work on i386 and other arches too ...
+    (LP: #1254686)
+
+ -- Oliver Grawert <ogra@ubuntu.com>  Mon, 25 Nov 2013 15:40:13 +0100
+
+qtmultimedia-opensource-src-touch (5.1.1+git20130920+5b12abb862-0ubuntu3) saucy; urgency=low
+
+  * Adding quick to pro file for qgsttools_p (LP: #1234087).
+
+ -- Sergio Schvezov <sergio.schvezov@canonical.com>  Wed, 02 Oct 2013 20:21:03 -0300
+
+qtmultimedia-opensource-src-touch (5.1.1+git20130920+5b12abb862-0ubuntu2) saucy; urgency=low
+
+  * Don't build the packages not being diverted.
+
+ -- Sergio Schvezov <sergio.schvezov@canonical.com>  Tue, 24 Sep 2013 17:15:17 -0300
+
+qtmultimedia-opensource-src-touch (5.1.1+git20130920+5b12abb862-0ubuntu1) saucy; urgency=low
+
+  [ Sergio Schvezov ]
+  * Renaming source package and binary packages (aka fork).
+  * Using new source https://github.com/jhodapp/qtmultimedia.git.
+
+  [ Timo Jyrinki ]
+  * Initial release of the 'touch' upstream sources
+
+ -- Sergio Schvezov <sergio.schvezov@canonical.com>  Fri, 20 Sep 2013 19:21:01 -0300
+
+qtmultimedia-opensource-src (5.1.1-1ubuntu1) UNRELEASED; urgency=low
+
+  * New upstream release
+  * Update *.install
+  * Add libqt5multimedia5-plugins dependency to QML plugin (LP: #1202996)
+  * Merge Debian packaging 5.1.1-1, remaining changes:
+    - Keep package transition provide/conflicts/replaces for upgrades
+    - Keep the private headers package 
+  * Update amd64 symbols
+
+ -- Timo Jyrinki <timo-jyrinki@ubuntu.com>  Mon, 05 Aug 2013 11:48:22 +0300
+
+qtmultimedia-opensource-src (5.1.1-1) unstable; urgency=low
+
+  * New upstream release.
+  * Tighten Qt 5 build dependencies.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Fri, 30 Aug 2013 22:59:54 -0300
+
+qtmultimedia-opensource-src (5.1.0-2) unstable; urgency=low
+
+  * Upload to unstable.
+  * Update symbols files.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Sun, 11 Aug 2013 10:50:12 -0300
+
+qtmultimedia-opensource-src (5.1.0-1) experimental; urgency=low
+
+  * New upstream release.
+
+  [ Ricardo Salveti de Araujo ]
+  * debian/control: adding missing dependencies for qtmultimedia5-examples.
+    Forwarded to Debian by Dmitry Shachnev.
+
+  [ Lisandro Damián Nicanor Pérez Meyer ]
+  * Update symbols files.
+  * Fix watch file.
+  * Bump build dependencies to 5.1.0~.
+  * Remove package qtmultimedia5-private-dev. Nothing in the Qt stack seems to
+    be using it. Can be reintroduced later if needed.
+    - Remove associated install file.
+    - Remove the files from debian/tmp before installing the packages.
+  * Adjust install files.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Thu, 11 Jul 2013 20:42:48 -0300
+
+qtmultimedia-opensource-src (5.0.2-4ubuntu3) saucy; urgency=low
+
+  * debian/control: adding missing dependencies for qtmultimedia5-examples
+
+ -- Ricardo Salveti de Araujo <ricardo.salveti@canonical.com>  Tue, 02 Jul 2013 17:52:51 -0300
+
+qtmultimedia-opensource-src (5.0.2-4ubuntu2) saucy; urgency=low
+
+  * Add .install files for the new packages.
+
+ -- Dmitry Shachnev <mitya57@ubuntu.com>  Tue, 02 Jul 2013 19:54:41 +0400
+
+qtmultimedia-opensource-src (5.0.2-4ubuntu1) saucy; urgency=low
+
+  * Merge with Debian packaging Git, remaining changes:
+    - Maintainer field and Vcs-Bzr.
+    - Use ${misc:Pre-Depends}.
+    - Add Conflicts/Replaces fields for our old packages.
+    - Updated symbols files.
+
+ -- Dmitry Shachnev <mitya57@ubuntu.com>  Tue, 02 Jul 2013 19:42:00 +0400
+
+qtmultimedia-opensource-src (5.0.2-4) experimental; urgency=low
+
+  * Build the documentation shipped with this submodule as a build-indep task:
+    - Add the necessary indep build dependencies:
+      * qttools5-dev-tools to use qhelpgenerator.
+      * libqt5sql5-sqlite to generate qch doc.
+    - Build and create packages for qch and HTML doc formats.
+  * Update symbols file.
+  * Make qtmultimedia5-dbg M-A same to allow coinstalability of debugging
+    symbols.
+  * Bump qtbase B-D to 5.0.2+dfsg1-6~, because it's the version that adds
+    GStreamer support.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Thu, 20 Jun 2013 20:26:20 -0300
+
+qtmultimedia-opensource-src (5.0.2-3) experimental; urgency=low
+
+  [ Pino Toscano ]
+  * qtmultimedia5-examples: add ${misc:Pre-Depends}.
+
+  [ Lisandro Damián Nicanor Pérez Meyer ]
+  * Update symbols files.
+
+  [ Timo Jyrinki]
+  * Fix paths in pkgconfig files
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Wed, 29 May 2013 12:19:03 -0300
+
+qtmultimedia-opensource-src (5.0.2-2ubuntu2) saucy; urgency=low
+
+  * Update libqt5multimedia5.symbols for qreal substitutions for armhf.
+
+ -- Adam Conrad <adconrad@ubuntu.com>  Thu, 23 May 2013 19:47:12 -0600
+
+qtmultimedia-opensource-src (5.0.2-2ubuntu1) saucy; urgency=low
+
+  * Sync with Debian, new upstream version
+    - Audio, mediaservice and playlistformats plugins were splitted to 
+      libqt5multimedia5-plugins - add to your dependencies!
+    - Keep replaces/provides/conflicts for old package names
+    - Fix pkgconfig files
+    - Update libqgsttools-p1.symbols for saucy
+
+ -- Timo Jyrinki <timo-jyrinki@ubuntu.com>  Tue, 14 May 2013 14:20:13 +0300
+
+qtmultimedia-opensource-src (5.0.2-2) experimental; urgency=low
+
+  [ Pino Toscano ]
+  * Update Vcs-Browser and Vcs-Git headers.
+  * Remove extra qt5-qmake and qtbase5-dev-tools build dependencies.
+  * qtmultimedia5-dbg: add ${misc:Depends}, and demote the
+    qtmultimedia5-examples dependency to suggest.
+  * Update symbols files.
+  * Add the libasound2-dev (on Linux only) build dependency.
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Mon, 06 May 2013 15:15:00 -0300
+
+qtmultimedia-opensource-src (5.0.2-1) experimental; urgency=low
+
+  * Initial release. (Closes: #697509)
+
+ -- Lisandro Damián Nicanor Pérez Meyer <lisandro@debian.org>  Sun, 28 Apr 2013 09:28:52 -0300
+
+qtmultimedia-opensource-src (5.0.1-0ubuntu6) raring; urgency=low
+
+  * debian/control
+    - added a Replaces to libqt5multimedia5 for qtmultimedia5-dev to 
+      handle the files being moved
+
+ -- Ken VanDine <ken.vandine@canonical.com>  Thu, 28 Mar 2013 14:43:34 -0400
+
+qtmultimedia-opensource-src (5.0.1-0ubuntu5) raring; urgency=low
+
+  * Fix plugin library files erronously in -dev (LP: #1159792)
+
+ -- Timo Jyrinki <timo-jyrinki@ubuntu.com>  Mon, 25 Mar 2013 13:43:07 +0000
+
+qtmultimedia-opensource-src (5.0.1-0ubuntu4) raring; urgency=low
+
+  * debian/control: also C/R/P libqt5declarative5-qtmultimedia-plugin
+  * Add Vcs-Bzr for ~kubuntu-packagers
+
+ -- Timo Jyrinki <timo-jyrinki@ubuntu.com>  Wed, 27 Feb 2013 10:23:24 +0000
+
+qtmultimedia-opensource-src (5.0.1-0ubuntu3) raring; urgency=low
+
+  * debian/control: need to also C/R/P against libqgsttools for the ppa
+    transition
+
+ -- Didier Roche <didrocks@ubuntu.com>  Thu, 21 Feb 2013 18:21:29 +0000
+
+qtmultimedia-opensource-src (5.0.1-0ubuntu2) raring; urgency=low
+
+  [ Timo Jyrinki ]
+  * Fix pkgconfig Libs.private path (LP: #1125156) 
+  * Add qtdeclarative5-qtaudioengine-plugin
+
+  [ Didier Roche ]
+  * Add libqt5multimediaquick-qt5 R/C/P libqt5multimediaquick5 to transition
+    from the sdk ppa to raring
+
+ -- Didier Roche <didrocks@ubuntu.com>  Thu, 21 Feb 2013 16:11:14 +0000
+
+qtmultimedia-opensource-src (5.0.1-0ubuntu1) raring; urgency=low
+
+  * Initial release.
+  * Cherry-pick from upstream:
+    - add_license_files.patch
+
+ -- Timo Jyrinki <timo-jyrinki@ubuntu.com>  Wed, 06 Feb 2013 14:01:27 +0000

@@ -8,11 +8,12 @@ QT = core multimedia-private gui-private opengl
 
 unix:!maemo*:contains(QT_CONFIG, alsa) {
 DEFINES += HAVE_ALSA
-LIBS_PRIVATE += \
+LIBS += \
     -lasound
 }
 
 CONFIG += link_pkgconfig
+    gstreamer-interfaces-$$GST_VERSION \
 
 PKGCONFIG += \
     gstreamer-$$GST_VERSION \
@@ -21,13 +22,11 @@ PKGCONFIG += \
     gstreamer-video-$$GST_VERSION \
     gstreamer-pbutils-$$GST_VERSION
 
-equals(GST_VERSION,"0.10"): PKGCONFIG_PRIVATE += gstreamer-interfaces-$$GST_VERSION
-
-maemo*: PKGCONFIG_PRIVATE +=gstreamer-plugins-bad-0.10
+maemo*:PKGCONFIG +=gstreamer-plugins-bad-0.10
 
 config_resourcepolicy {
     DEFINES += HAVE_RESOURCE_POLICY
-    PKGCONFIG_PRIVATE += libresourceqt5
+    PKGCONFIG += libresourceqt1
 }
 
 # Header files must go inside source directory of a module
@@ -52,7 +51,6 @@ PRIVATE_HEADERS += \
     qgstcodecsinfo_p.h \
     qgstreamervideoprobecontrol_p.h \
     qgstreameraudioprobecontrol_p.h \
-    qgstreamervideowindow_p.h
 
 SOURCES += \
     qgstbufferpoolinterface.cpp \
@@ -69,26 +67,43 @@ SOURCES += \
     gstvideoconnector.c \
     qgstreamervideoprobecontrol.cpp \
     qgstreameraudioprobecontrol.cpp \
-    qgstreamervideowindow.cpp
 
-qtHaveModule(widgets) {
-    QT += multimediawidgets
+config_xvideo {
+    DEFINES += HAVE_XVIDEO
+
+    LIBS += -lXv -lX11 -lXext
 
     PRIVATE_HEADERS += \
-        qgstreamervideowidget_p.h
+        qgstxvimagebuffer_p.h \
 
     SOURCES += \
-        qgstreamervideowidget.cpp
+        qgstxvimagebuffer.cpp \
+
+    qtHaveModule(widgets) {
+        QT += multimediawidgets
+
+        PRIVATE_HEADERS += \
+        qgstreamervideooverlay_p.h \
+        qgstreamervideowindow_p.h \
+        qgstreamervideowidget_p.h \
+        qx11videosurface_p.h \
+
+        SOURCES += \
+        qgstreamervideooverlay.cpp \
+        qgstreamervideowindow.cpp \
+        qgstreamervideowidget.cpp \
+        qx11videosurface.cpp \
+    }
 }
 
 maemo6 {
-    PKGCONFIG_PRIVATE += qmsystem2
+    PKGCONFIG += qmsystem2
 
     contains(QT_CONFIG, opengles2):qtHaveModule(widgets) {
         PRIVATE_HEADERS += qgstreamergltexturerenderer_p.h
         SOURCES += qgstreamergltexturerenderer.cpp
         QT += opengl
-        LIBS_PRIVATE += -lEGL -lgstmeegointerfaces-0.10
+        LIBS += -lEGL -lgstmeegointerfaces-0.10
     }
 }
 
@@ -103,13 +118,13 @@ mir: {
 }
 
 config_gstreamer_appsrc {
-    PKGCONFIG_PRIVATE += gstreamer-app-$$GST_VERSION
+    PKGCONFIG += gstreamer-app-$$GST_VERSION
     PRIVATE_HEADERS += qgstappsrc_p.h
     SOURCES += qgstappsrc.cpp
 
     DEFINES += HAVE_GST_APPSRC
 
-    LIBS_PRIVATE += -lgstapp-$$GST_VERSION
+    LIBS += -lgstapp-$$GST_VERSION
 }
 
 HEADERS += $$PRIVATE_HEADERS

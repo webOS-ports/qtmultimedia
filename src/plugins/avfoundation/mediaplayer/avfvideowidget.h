@@ -42,44 +42,43 @@
 #ifndef AVFVIDEOWIDGET_H
 #define AVFVIDEOWIDGET_H
 
-#include <QtWidgets/QWidget>
-
-@class AVPlayerLayer;
-#if defined(Q_OS_OSX)
-@class NSView;
-#else
-@class UIView;
-#endif
+#include <QtOpenGL/QGLWidget>
+#include <QtGui/QMatrix4x4>
 
 QT_BEGIN_NAMESPACE
 
-class AVFVideoWidget : public QWidget
+class QOpenGLShaderProgram;
+
+class AVFVideoWidget : public QGLWidget
 {
 public:
-    AVFVideoWidget(QWidget *parent);
+    AVFVideoWidget(QWidget *parent, const QGLFormat &format);
     virtual ~AVFVideoWidget();
 
-    QSize sizeHint() const;
-    Qt::AspectRatioMode aspectRatioMode() const;
-    void setAspectRatioMode(Qt::AspectRatioMode mode);
-    void setPlayerLayer(AVPlayerLayer *layer);
+    void initializeGL();
+    void resizeGL(int w, int h);
+    void paintGL();
 
-protected:
-    void resizeEvent(QResizeEvent *);
-    void paintEvent(QPaintEvent *);
+    void setTexture(GLuint texture);
+
+    QSize sizeHint() const;
+    void setNativeSize(const QSize &size);
+
+    void setAspectRatioMode(Qt::AspectRatioMode mode);
 
 private:
-    void updateAspectRatio();
-    void updatePlayerLayerBounds(const QSize &size);
+    QRect displayRect() const;
 
+    GLuint m_textureId;
     QSize m_nativeSize;
     Qt::AspectRatioMode m_aspectRatioMode;
-    AVPlayerLayer *m_playerLayer;
-#if defined(Q_OS_OSX)
-    NSView *m_nativeView;
-#else
-    UIView *m_nativeView;
-#endif
+
+    QOpenGLShaderProgram *m_shaderProgram;
+    QMatrix4x4 m_transformMatrix;
+
+    int m_matrixLocation;
+    int m_vertexCoordEntry;
+    int m_textureCoordEntry;
 };
 
 QT_END_NAMESPACE

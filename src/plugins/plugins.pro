@@ -9,16 +9,15 @@ TEMPLATE = subdirs
 SUBDIRS += m3u
 
 android {
-   SUBDIRS += android opensles
+   SUBDIRS += android
+}
+
+blackberry {
+    SUBDIRS += blackberry
 }
 
 qnx {
-    config_mmrenderer: SUBDIRS += qnx
-    SUBDIRS += audiocapture
-}
-
-qnx:!blackberry {
-    SUBDIRS += qnx-audio
+    SUBDIRS += qnx
 }
 
 win32 {
@@ -30,7 +29,7 @@ win32 {
     config_wmf: SUBDIRS += wmf
 }
 
-unix:!mac:!android {
+unix:!mac {
     config_gstreamer {
        SUBDIRS += gstreamer
     } else {
@@ -46,14 +45,11 @@ unix:!mac:!android {
 }
 
 mac:!simulator {
-    SUBDIRS += audiocapture coreaudio
+    SUBDIRS += audiocapture
 
-    config_avfoundation: SUBDIRS += avfoundation
-
-    !ios: SUBDIRS += qt7
-}
-
-config_resourcepolicy {
-    SUBDIRS += resourcepolicy
+    !ios {
+        SUBDIRS += qt7
+        config_avfoundation: SUBDIRS += avfoundation
+    }
 }
 

@@ -139,7 +139,7 @@ void QGstreamerPlayerServicePlugin::updateSupportedMimeTypes() const
                     if (factory
 #if GST_CHECK_VERSION(1,0,0)
                         && (qstrcmp(gst_element_factory_get_metadata(factory, GST_ELEMENT_METADATA_KLASS), "Codec/Decoder/Audio") == 0
-                          || qstrcmp(gst_element_factory_get_metadata(factory, GST_ELEMENT_METADATA_KLASS),"Codec/Decoder/Video") == 0
+                          || qstrcmp(gst_element_factory_get_metadata(factory, GST_ELEMENT_METADATA_KLASS),"Codec/Decoder/Video") == 0 
                           || qstrcmp(gst_element_factory_get_metadata(factory, GST_ELEMENT_METADATA_KLASS), "Codec/Demux") == 0 )
 #else
                         && (qstrcmp(factory->details.klass, "Codec/Decoder/Audio") == 0

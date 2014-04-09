@@ -52,7 +52,9 @@ class DSCameraControl;
 class DSCameraSession;
 class DSVideoOutputControl;
 class DSVideoDeviceControl;
+class DSVideoRendererControl;
 class DSImageCaptureControl;
+class DSVideoWidgetControl;
 
 
 class DSCameraService : public QMediaService
@@ -71,10 +73,10 @@ private:
     DSCameraSession        *m_session;
     DSVideoOutputControl   *m_videoOutput;
 #if defined(HAVE_WIDGETS)
-    QMediaControl          *m_viewFinderWidget;
+    DSVideoWidgetControl   *m_viewFinderWidget;
 #endif
     DSVideoDeviceControl   *m_videoDevice;
-    QMediaControl          *m_videoRenderer;
+    DSVideoRendererControl *m_videoRenderer;
     DSImageCaptureControl  *m_imageCapture;
     QByteArray m_device;
 };

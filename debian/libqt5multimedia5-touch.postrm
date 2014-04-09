@@ -1,0 +1,17 @@
+pkg=libqt5multimedia5-touch
+divert_dir="/var/lib/$pkg-diverted"
+
+if [ remove = "$1" -o abort-install = "$1" -o disappear = "$1" -o purge = "$1" ]; then
+  for version in  5.2.1 5.2 5; do
+    dpkg-divert --package "$pkg" --remove --rename \
+      --divert \
+      "$divert_dir"/libQt5Multimedia.so.$version.diverted-$pkg \
+      /usr/lib/__ARCH__/libQt5Multimedia.so.$version
+  done
+
+  if [ -d "$divert_dir" ]; then
+    rmdir "$divert_dir"
+  fi
+fi
+
+#DEBHELPER#

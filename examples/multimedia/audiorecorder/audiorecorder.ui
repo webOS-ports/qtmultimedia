@@ -17,10 +17,10 @@
    <layout class="QGridLayout" name="gridLayout_3">
     <item row="0" column="0" colspan="3">
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="3" column="0">
-       <widget class="QLabel" name="label_4">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
         <property name="text">
-         <string>Sample rate:</string>
+         <string>Input Device:</string>
         </property>
        </widget>
       </item>
@@ -34,12 +34,8 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Input Device:</string>
-        </property>
-       </widget>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="audioCodecBox"/>
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="label_3">
@@ -51,21 +47,15 @@
       <item row="2" column="1">
        <widget class="QComboBox" name="containerBox"/>
       </item>
-      <item row="3" column="1">
-       <widget class="QComboBox" name="sampleRateBox"/>
-      </item>
-      <item row="1" column="1">
-       <widget class="QComboBox" name="audioCodecBox"/>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="label_5">
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>Channels:</string>
+         <string>Sample rate:</string>
         </property>
        </widget>
       </item>
-      <item row="4" column="1">
-       <widget class="QComboBox" name="channelsBox"/>
+      <item row="3" column="1">
+       <widget class="QComboBox" name="sampleRateBox"/>
       </item>
      </layout>
     </item>
@@ -172,8 +162,9 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="1" colspan="2">
-     <layout class="QVBoxLayout" name="levelsLayout"/>
+    <item row="3" column="1" colspan="-1">
+     <widget class="QAudioLevel" name="audioLevel">
+     </widget>
     </item>
    </layout>
   </widget>

@@ -244,18 +244,16 @@ bool QWaveDecoder::enoughDataAvailable()
 bool QWaveDecoder::findChunk(const char *chunkId)
 {
     chunk descriptor;
+    if (!peekChunk(&descriptor))
+        return false;
 
-    do {
-        if (!peekChunk(&descriptor))
-            return false;
+    if (qstrncmp(descriptor.id, chunkId, 4) == 0)
+        return true;
 
-        if (qstrncmp(descriptor.id, chunkId, 4) == 0)
-            return true;
-
-        // It's possible that bytes->available() is less than the chunk size
-        // if it's corrupt.
-        junkToSkip = qint64(sizeof(chunk) + descriptor.size);
-
+    // It's possible that bytes->available() is less than the chunk size
+    // if it's corrupt.
+    junkToSkip = qint64(sizeof(chunk) + descriptor.size);
+    while (source->bytesAvailable() > 0) {
         // Skip the current amount
         if (junkToSkip > 0)
             discardBytes(junkToSkip);
@@ -265,7 +263,12 @@ bool QWaveDecoder::findChunk(const char *chunkId)
         if (junkToSkip > 0)
             return false;
 
-    } while (source->bytesAvailable() > 0);
+        if (!peekChunk(&descriptor))
+            return false;
+
+        if (qstrncmp(descriptor.id, chunkId, 4) == 0)
+            return true;
+    }
 
     return false;
 }

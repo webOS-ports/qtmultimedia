@@ -276,6 +276,7 @@ void tst_QMediaPlaylist::currentItem()
     QCOMPARE(playlist.previousIndex(), 0);
     QCOMPARE(playlist.previousIndex(2), -1);
 
+    QTest::ignoreMessage(QtWarningMsg, "QMediaPlaylistNavigator: Jump outside playlist range ");
     playlist.setCurrentIndex(2);
 
     QCOMPARE(playlist.currentIndex(), -1);

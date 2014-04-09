@@ -43,18 +43,28 @@ package org.qtproject.qt5.android.multimedia;
 
 import android.graphics.SurfaceTexture;
 
-public class QtSurfaceTexture extends SurfaceTexture implements SurfaceTexture.OnFrameAvailableListener
+public class QtSurfaceTexture implements SurfaceTexture.OnFrameAvailableListener
 {
+    public SurfaceTexture surfaceTexture;
     private int texID;
 
     public QtSurfaceTexture(int texName)
     {
-        super(texName);
         texID = texName;
-        setOnFrameAvailableListener(this);
+        surfaceTexture = new SurfaceTexture(texName);
+        surfaceTexture.setOnFrameAvailableListener(this);
     }
 
-    @Override
+    public void getTransformMatrix(float[] mtx)
+    {
+        surfaceTexture.getTransformMatrix(mtx);
+    }
+
+    public void updateTexImage()
+    {
+        surfaceTexture.updateTexImage();
+    }
+
     public void onFrameAvailable(SurfaceTexture surfaceTexture)
     {
         notifyFrameAvailable(texID);

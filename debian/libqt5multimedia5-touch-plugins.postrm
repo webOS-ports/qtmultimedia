@@ -1,0 +1,25 @@
+pkg=libqt5multimedia5-touch-plugins
+divert_dir="/var/lib/$pkg-diverted"
+
+if [ remove = "$1" -o abort-install = "$1" -o disappear = "$1" -o purge = "$1" ]; then
+  for plugin in libgstmediacapture.so libgstaudiodecoder.so libgstmediaplayer.so libgstcamerabin.so; do
+    dpkg-divert --package "$pkg" --remove --rename \
+      --divert \
+      "$divert_dir"/$plugin.diverted-$pkg \
+      /usr/lib/__ARCH__/qt5/plugins/mediaservice/$plugin
+  done
+  dpkg-divert --package "$pkg" --remove --rename \
+    --divert \
+    "$divert_dir"/libqtmedia_pulse.so.diverted-$pkg \
+    /usr/lib/__ARCH__/qt5/plugins/audio/libqtmedia_pulse.so
+  dpkg-divert --package "$pkg" --remove --rename \
+    --divert \
+    "$divert_dir"/libqtmultimedia_m3u.so.diverted-$pkg \
+    /usr/lib/__ARCH__/qt5/plugins/playlistformats/libqtmultimedia_m3u.so
+
+  if [ -d "$divert_dir" ]; then
+    rmdir "$divert_dir"
+  fi
+fi
+
+#DEBHELPER#

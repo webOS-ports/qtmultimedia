@@ -26,7 +26,12 @@ mir: {
 
 config_resourcepolicy {
     DEFINES += HAVE_RESOURCE_POLICY
-    PKGCONFIG += libresourceqt5
+    PKGCONFIG += libresourceqt1
+}
+
+config_xvideo:qtHaveModule(widgets) {
+    DEFINES += HAVE_XVIDEO
+    LIBS += -lXv -lX11 -lXext
 }
 
 config_gstreamer_appsrc {

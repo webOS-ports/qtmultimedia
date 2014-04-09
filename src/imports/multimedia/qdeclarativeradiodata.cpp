@@ -46,7 +46,7 @@ QT_BEGIN_NAMESPACE
 /*!
     \qmltype RadioData
     \instantiates QDeclarativeRadioData
-    \inqmlmodule QtMultimedia
+    \inqmlmodule QtMultimedia 5.0
     \brief Access RDS data from a QML application.
     \ingroup multimedia_qml
     \ingroup multimedia_radio_qml
@@ -120,7 +120,7 @@ QDeclarativeRadioData::~QDeclarativeRadioData()
 }
 
 /*!
-    \qmlproperty enumeration QtMultimedia::RadioData::availability
+    \qmlproperty enumeration QtMultimedia5::RadioData::availability
 
     Returns the availability state of the radio data interface.
 
@@ -147,7 +147,7 @@ QDeclarativeRadioData::Availability QDeclarativeRadioData::availability() const
 
 
 /*!
-    \qmlproperty string QtMultimedia::RadioData::stationId
+    \qmlproperty string QtMultimedia5::RadioData::stationId
 
     This property allows you to read the station Id of the currently tuned radio
     station.
@@ -158,7 +158,7 @@ QString QDeclarativeRadioData::stationId() const
 }
 
 /*!
-    \qmlproperty enumeration QtMultimedia::RadioData::programType
+    \qmlproperty enumeration QtMultimedia5::RadioData::programType
 
     This property holds the type of the currently playing program as transmitted
     by the radio station. The value can be any one of the values defined in the
@@ -223,7 +223,7 @@ QDeclarativeRadioData::ProgramType QDeclarativeRadioData::programType() const
 }
 
 /*!
-    \qmlproperty string QtMultimedia::RadioData::programTypeName
+    \qmlproperty string QtMultimedia5::RadioData::programTypeName
 
     This property holds a string representation of the \l programType.
   */
@@ -233,7 +233,7 @@ QString QDeclarativeRadioData::programTypeName() const
 }
 
 /*!
-    \qmlproperty string QtMultimedia::RadioData::stationName
+    \qmlproperty string QtMultimedia5::RadioData::stationName
 
     This property has the name of the currently tuned radio station.
   */
@@ -243,7 +243,7 @@ QString QDeclarativeRadioData::stationName() const
 }
 
 /*!
-    \qmlproperty string QtMultimedia::RadioData::radioText
+    \qmlproperty string QtMultimedia5::RadioData::radioText
 
     This property holds free-text transmitted by the radio station. This is typically used to
     show supporting information for the currently playing content, for instance song title or
@@ -255,7 +255,7 @@ QString QDeclarativeRadioData::radioText() const
 }
 
 /*!
-    \qmlproperty bool QtMultimedia::RadioData::alternativeFrequenciesEnabled
+    \qmlproperty bool QtMultimedia5::RadioData::alternativeFrequenciesEnabled
 
     This property allows you to specify whether the radio should try and tune to alternative
     frequencies if the signal strength of the current station becomes too weak. The alternative

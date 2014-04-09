@@ -1,4 +1,4 @@
 TEMPLATE = subdirs
 
-SUBDIRS += mediaplayer \
-           camera
+SUBDIRS += camera \
+           mediaplayer

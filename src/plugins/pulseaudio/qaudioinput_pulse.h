@@ -130,9 +130,11 @@ private:
     int m_bufferSize;
     int m_periodSize;
     int m_intervalTime;
+    unsigned int m_bufferTime;
     unsigned int m_periodTime;
     QTimer *m_timer;
     qint64 m_elapsedTimeOffset;
+    char *audioBuffer;
     pa_stream *m_stream;
     QTime m_timeStamp;
     QTime m_clockStamp;

@@ -46,9 +46,9 @@
 
 #include "qaudioinputselectorcontrol.h"
 
-QT_BEGIN_NAMESPACE
-
 class AudioCaptureSession;
+
+QT_USE_NAMESPACE
 
 class AudioInputSelector : public QAudioInputSelectorControl
 {
@@ -73,7 +73,5 @@ private:
     QList<QString> m_descriptions;
     AudioCaptureSession* m_session;
 };
-
-QT_END_NAMESPACE
 
 #endif // AUDIOINPUTSELECTOR_H

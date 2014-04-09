@@ -98,7 +98,7 @@ typedef enum {
     "text/plain; " \
     "text/x-pango-markup; " \
     "video/x-dvd-subpicture; " \
-    "subpicture/x-pgs"
+    "subpicture/x-pgs" 
 #endif
 
 static GstStaticCaps static_RawCaps = GST_STATIC_CAPS(DEFAULT_RAW_CAPS);
@@ -518,7 +518,7 @@ void QGstreamerPlayerSession::setVideoRenderer(QObject *videoOutput)
         }
     }
 
-    QGstreamerVideoRendererInterface* renderer = qobject_cast<QGstreamerVideoRendererInterface*>(videoOutput);   
+    QGstreamerVideoRendererInterface* renderer = qobject_cast<QGstreamerVideoRendererInterface*>(videoOutput);
 
     m_renderer = renderer;
 
@@ -1921,7 +1921,7 @@ void QGstreamerPlayerSession::removeAudioBufferProbe()
 
     GstPad *pad = gst_element_get_static_pad(m_audioSink, "sink");
     if (pad) {
-#if GST_CHECK_VERSION(1,0,0)
+#if GST_CHECK_VERSION(1,0,0) 
         gst_pad_remove_probe(pad, m_audioBufferProbeId);
 #else
         gst_pad_remove_buffer_probe(pad, m_audioBufferProbeId);
@@ -1940,7 +1940,7 @@ void QGstreamerPlayerSession::addAudioBufferProbe()
 
     GstPad *pad = gst_element_get_static_pad(m_audioSink, "sink");
     if (pad) {
-#if GST_CHECK_VERSION(1,0,0)
+#if GST_CHECK_VERSION(1,0,0) 
         m_audioBufferProbeId = gst_pad_add_probe(pad, GST_PAD_PROBE_TYPE_BUFFER, padAudioBufferProbe, this, NULL);
 #else
         m_audioBufferProbeId = gst_pad_add_buffer_probe(pad, G_CALLBACK(padAudioBufferProbe), this);

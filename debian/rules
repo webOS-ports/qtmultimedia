@@ -1,0 +1,77 @@
+#!/usr/bin/make -f
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+include /usr/share/dpkg/architecture.mk
+
+# Package names
+PKG_version     := $(shell dpkg-parsechangelog | sed -n 's/^Version: //p')
+PKG_source      := $(shell dpkg-parsechangelog | sed -n 's/^Source: //p')
+UPS_version     := $(shell echo '$(PKG_version)' | sed 's/.*://; s/-[^-]*$$//')
+GIT_rev         := $(shell echo '$(UPS_version)' | sed 's/.*+//')
+GIT_repo        := https://github.com/jhodapp/qtmultimedia.git
+
+export CFLAGS := $(shell dpkg-buildflags --get CFLAGS) $(shell dpkg-buildflags --get CPPFLAGS)
+export CXXFLAGS := $(shell dpkg-buildflags --get CXXFLAGS) $(shell dpkg-buildflags --get CPPFLAGS)
+export LDFLAGS := $(shell dpkg-buildflags --get LDFLAGS) -Wl,--as-needed
+export QT_SELECT := qt5
+
+get-packaged-orig-source:
+	rm -rf $(PKG_source)-$(UPS_version)
+	rm -f $(PKG_source)-$(UPS_version).orig.tar.gz
+	git clone $(GIT_repo) $(PKG_source)-$(UPS_version)
+	cd $(PKG_source)-$(UPS_version) && git archive \
+		--format tar \
+		--prefix $(PKG_source)-$(UPS_version)/ \
+		$(GIT_rev) \
+		| gzip >../$(PKG_source)_$(UPS_version).orig.tar.gz
+	rm -rf $(PKG_source)-$(UPS_version)
+
+%:
+	dh $@ --parallel --with pkgkde_symbolshelper \
+		--dbg-package=qtmultimedia5-touch-dbg \
+		-Nqtmultimedia5-touch-examples \
+		-Nqtmultimedia5-touch-dev -Nqtmultimedia5-touch-private-dev \
+		-Nlibqt5multimediawidgets5-touch
+
+override_dh_auto_configure:
+	sed "s/__ARCH__/$(DEB_HOST_MULTIARCH)/g" -i \
+		debian/libqgsttools-p1-touch.preinst
+	sed "s/__ARCH__/$(DEB_HOST_MULTIARCH)/g" -i \
+		debian/libqgsttools-p1-touch.postrm
+	sed "s/__ARCH__/$(DEB_HOST_MULTIARCH)/g" -i \
+		debian/libqt5multimedia5-touch.preinst
+	sed "s/__ARCH__/$(DEB_HOST_MULTIARCH)/g" -i \
+		debian/libqt5multimedia5-touch.postrm
+	sed "s/__ARCH__/$(DEB_HOST_MULTIARCH)/g" -i \
+		debian/libqt5multimediaquick-p5-touch.preinst
+	sed "s/__ARCH__/$(DEB_HOST_MULTIARCH)/g" -i \
+		debian/libqt5multimediaquick-p5-touch.postrm
+	sed "s/__ARCH__/$(DEB_HOST_MULTIARCH)/g" -i \
+		debian/qtdeclarative5-qtmultimedia-touch-plugin.preinst
+	sed "s/__ARCH__/$(DEB_HOST_MULTIARCH)/g" -i \
+		debian/qtdeclarative5-qtmultimedia-touch-plugin.postrm
+	sed "s/__ARCH__/$(DEB_HOST_MULTIARCH)/g" -i \
+		debian/libqt5multimedia5-touch-plugins.preinst
+	sed "s/__ARCH__/$(DEB_HOST_MULTIARCH)/g" -i \
+		debian/libqt5multimedia5-touch-plugins.postrm
+	./debian/syncqt.pl -version 5.1.1
+	qmake CONFIG+=mir
+
+override_dh_auto_install-arch:
+	dh_auto_install
+
+	# Fix wrong path in pkgconfig files
+	find $(CURDIR)/debian/tmp/usr/lib/*/pkgconfig -type f -name '*.pc' \
+	-exec sed -i -e 's/$(DEB_HOST_MULTIARCH)\/$(DEB_HOST_MULTIARCH)/$(DEB_HOST_MULTIARCH)/g' {} \;
+	
+	# Remove libtool-like files
+	rm -f debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/*.la
+
+override_dh_install:
+	dh_install --fail-missing
+
+override_dh_builddeb:
+	dh_builddeb -- -Zxz
+

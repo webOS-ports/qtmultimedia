@@ -49,9 +49,9 @@
 
 #include <qaudioformat.h>
 
-QT_BEGIN_NAMESPACE
-
 class AudioCaptureSession;
+
+QT_USE_NAMESPACE
 
 class AudioEncoderControl : public QAudioEncoderSettingsControl
 {
@@ -68,12 +68,8 @@ public:
     void setAudioSettings(const QAudioEncoderSettings&);
 
 private:
-    void update();
-
     AudioCaptureSession* m_session;
-    QList<int> m_sampleRates;
+    QAudioEncoderSettings m_settings;
 };
-
-QT_END_NAMESPACE
 
 #endif

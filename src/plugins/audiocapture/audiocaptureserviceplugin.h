@@ -45,7 +45,7 @@
 
 #include "qmediaserviceproviderplugin.h"
 
-QT_BEGIN_NAMESPACE
+QT_USE_NAMESPACE
 
 class AudioCaptureServicePlugin : public QMediaServiceProviderPlugin
 {
@@ -57,7 +57,5 @@ public:
     QMediaService* create(QString const& key);
     void release(QMediaService *service);
 };
-
-QT_END_NAMESPACE
 
 #endif // AUDIOCAPTURESERVICEPLUGIN_H

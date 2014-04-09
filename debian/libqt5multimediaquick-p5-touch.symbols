@@ -1,0 +1,11 @@
+# SymbolsHelper-Confirmed: 5.0.2 amd64
+libQt5MultimediaQuick_p.so.5 libqt5multimediaquick-p5-touch #MINVER#
+ _ZN12QSGVideoNode23setTexturedRectGeometryERK6QRectFS2_i@Base 5.0.2
+ _ZN12QSGVideoNodeC1Ev@Base 5.0.2
+ _ZN12QSGVideoNodeC2Ev@Base 5.0.2
+ _ZN12QSGVideoNodeD0Ev@Base 5.0.2
+ _ZN12QSGVideoNodeD1Ev@Base 5.0.2
+ _ZN12QSGVideoNodeD2Ev@Base 5.0.2
+ _ZTI12QSGVideoNode@Base 5.0.2
+ _ZTS12QSGVideoNode@Base 5.0.2
+ _ZTV12QSGVideoNode@Base 5.0.2

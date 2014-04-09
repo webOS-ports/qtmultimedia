@@ -1,8 +1,5 @@
 TEMPLATE = subdirs
 
-SUBDIRS += src \
+SUBDIRS += mediaplayer \
            jar
 
-qtHaveModule(quick) {
-    SUBDIRS += videonode
-}

@@ -52,8 +52,6 @@ class QAudioProbe;
 class QAudioBuffer;
 QT_END_NAMESPACE
 
-class QAudioLevel;
-
 class AudioRecorder : public QMainWindow
 {
     Q_OBJECT
@@ -70,18 +68,15 @@ private slots:
     void togglePause();
     void toggleRecord();
 
-    void updateStatus(QMediaRecorder::Status);
+    void updateState(QMediaRecorder::State);
     void updateProgress(qint64 pos);
     void displayErrorMessage();
 
 private:
-    void clearAudioLevels();
-
     Ui::AudioRecorder *ui;
 
     QAudioRecorder *audioRecorder;
     QAudioProbe *probe;
-    QList<QAudioLevel*> audioLevels;
     bool outputLocationSet;
 
 };

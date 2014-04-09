@@ -1,0 +1,4 @@
+usr/lib/*/qt5/plugins/audio/libqtmedia_pulse.so
+usr/lib/*/qt5/plugins/mediaservice/libgstaudiodecoder.so
+usr/lib/*/qt5/plugins/mediaservice/libgstmediaplayer.so
+usr/lib/*/qt5/plugins/playlistformats/libqtmultimedia_m3u.so

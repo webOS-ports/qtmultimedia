@@ -66,11 +66,12 @@
 #include <private/qgstreameraudioinputselector_p.h>
 #include <private/qgstreamervideoinputdevicecontrol_p.h>
 
-
 #if defined(HAVE_WIDGETS)
+#include <private/qgstreamervideooverlay_p.h>
+#include <private/qgstreamervideowindow_p.h>
 #include <private/qgstreamervideowidget_p.h>
 #endif
-#include <private/qgstreamervideowindow_p.h>
+
 #include <private/qgstreamervideorenderer_p.h>
 
 #if defined(Q_WS_MAEMO_6) && defined(__arm__)
@@ -100,8 +101,8 @@ CameraBinService::CameraBinService(const QString &service, QObject *parent):
 
     m_videoOutput = 0;
     m_videoRenderer = 0;
+#if defined(HAVE_XVIDEO) && defined(HAVE_WIDGETS)
     m_videoWindow = 0;
-#if defined(HAVE_WIDGETS)
     m_videoWidgetControl = 0;
 #endif
     m_imageCaptureControl = 0;
@@ -124,13 +125,12 @@ CameraBinService::CameraBinService(const QString &service, QObject *parent):
         m_videoRenderer = new QGstreamerVideoRenderer(this);
 #endif
 
+#if defined(HAVE_XVIDEO) && defined(HAVE_WIDGETS)
 #ifdef Q_WS_MAEMO_6
         m_videoWindow = new QGstreamerVideoWindow(this, "omapxvsink");
 #else
-        m_videoWindow = new QGstreamerVideoWindow(this);
+        m_videoWindow = new QGstreamerVideoOverlay(this);
 #endif
-
-#if defined(HAVE_WIDGETS)
         m_videoWidgetControl = new QGstreamerVideoWidgetControl(this);
 #endif
 
@@ -169,11 +169,11 @@ QMediaControl *CameraBinService::requestControl(const char *name)
     if (!m_videoOutput) {
         if (qstrcmp(name, QVideoRendererControl_iid) == 0) {
             m_videoOutput = m_videoRenderer;
-        } else if (qstrcmp(name, QVideoWindowControl_iid) == 0) {
-            m_videoOutput = m_videoWindow;
         }
-#if defined(HAVE_WIDGETS)
-        else if (qstrcmp(name, QVideoWidgetControl_iid) == 0) {
+#if defined(HAVE_XVIDEO) && defined(HAVE_WIDGETS)
+        else if (qstrcmp(name, QVideoWindowControl_iid) == 0) {
+            m_videoOutput = m_videoWindow;
+        } else if (qstrcmp(name, QVideoWidgetControl_iid) == 0) {
             m_videoOutput = m_videoWidgetControl;
         }
 #endif
